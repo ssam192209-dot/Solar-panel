@@ -1,0 +1,1258 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Solar Tracker — Panel Surya Pintar</title>
+<link rel="manifest" href="manifest.json" />
+<meta name="theme-color" content="#12141f" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%94%86%3C/text%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#12141f;
+    --bg-deep:#0c0e17;
+    --surface:#1b1f33;
+    --surface-2:#232847;
+    --line:#2c3153;
+    --gold:#e8a33d;
+    --gold-dim:#8a672e;
+    --teal:#4fb0ae;
+    --teal-dim:#2c5f5e;
+    --text:#f1efe9;
+    --text-muted:#9297b0;
+    --text-faint:#5c6084;
+    --danger:#d9694f;
+    --radius-lg:22px;
+    --radius-sm:12px;
+  }
+
+  *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html{ scroll-padding-top:calc(64px + env(safe-area-inset-top, 0px)); }
+  html,body{ margin:0; padding:0; }
+
+  body{
+    background:
+      radial-gradient(ellipse 900px 500px at 50% -10%, rgba(232,163,61,0.10), transparent 60%),
+      var(--bg);
+    color:var(--text);
+    font-family:'IBM Plex Sans', sans-serif;
+    min-height:100vh;
+    padding-bottom:calc(84px + env(safe-area-inset-bottom, 0px));
+    -webkit-font-smoothing:antialiased;
+    overscroll-behavior-y:none;
+  }
+
+  h1,h2,h3{ font-family:'Space Grotesk', sans-serif; margin:0; }
+
+  .wrap{
+    max-width:460px;
+    margin:0 auto;
+    padding:calc(14px + env(safe-area-inset-top, 0px)) 18px 0;
+  }
+
+  .tab-section{ scroll-margin-top:calc(70px + env(safe-area-inset-top, 0px)); animation:fadeInUp .45s ease both; }
+  @keyframes fadeInUp{ from{ opacity:0; transform:translateY(10px); } to{ opacity:1; transform:translateY(0); } }
+
+  /* ---------- Kartu dasar bergaya glass / depth ---------- */
+  .glass-card{
+    background:linear-gradient(160deg, rgba(37,42,74,0.92), rgba(24,28,47,0.92));
+    border:1px solid rgba(255,255,255,0.06);
+    border-radius:var(--radius-sm);
+    box-shadow:
+      0 14px 30px -16px rgba(0,0,0,0.6),
+      0 1px 0 rgba(255,255,255,0.03) inset,
+      0 -1px 0 rgba(0,0,0,0.3) inset;
+    backdrop-filter:blur(8px);
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+
+  /* ---------- Header ---------- */
+  header{
+    position:sticky;
+    top:0;
+    z-index:20;
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    margin:0 -18px 18px;
+    padding:calc(12px + env(safe-area-inset-top, 0px)) 18px 12px;
+    background:linear-gradient(180deg, rgba(18,20,31,0.92) 70%, rgba(18,20,31,0));
+    backdrop-filter:blur(10px);
+  }
+  header h1{
+    font-size:1.4rem;
+    font-weight:600;
+    letter-spacing:-0.01em;
+    line-height:1.25;
+    max-width:220px;
+  }
+  .status{
+    display:flex;
+    align-items:center;
+    gap:7px;
+    font-size:0.78rem;
+    color:var(--text-muted);
+    padding:6px 11px 6px 9px;
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:999px;
+    margin-top:2px;
+  }
+  .dot{
+    width:7px; height:7px; border-radius:50%;
+    background:var(--text-faint);
+    transition:background .4s ease, box-shadow .4s ease;
+  }
+  .dot.live{ background:var(--teal); box-shadow:0 0 0 3px rgba(79,176,174,0.18); }
+  .dot.offline{ background:var(--danger); box-shadow:0 0 0 3px rgba(217,105,79,0.18); }
+
+  /* ---------- Power card ---------- */
+  .power-card{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:14px;
+    padding:15px 16px;
+    margin-bottom:14px;
+  }
+  .power-info .k{ font-size:0.95rem; font-weight:600; font-family:'Space Grotesk', sans-serif; margin-bottom:3px; }
+  .power-info .d{ font-size:0.78rem; color:var(--text-muted); line-height:1.4; max-width:210px; }
+  .power-switch{
+    position:relative; flex-shrink:0; width:52px; height:30px;
+    border-radius:999px; background:var(--bg-deep); border:1px solid var(--line);
+    cursor:pointer; transition:background .3s ease, border-color .3s ease;
+  }
+  .power-switch .knob{
+    position:absolute; top:3px; left:3px; width:22px; height:22px; border-radius:50%;
+    background:var(--text-faint);
+    box-shadow:0 2px 4px rgba(0,0,0,0.4);
+    transition:transform .3s cubic-bezier(.4,0,.2,1), background .3s ease;
+  }
+  .power-switch.on{ background:rgba(79,176,174,0.18); border-color:var(--teal-dim); }
+  .power-switch.on .knob{ transform:translateX(22px); background:var(--teal); }
+
+  .fadeable{ transition:opacity .4s ease, filter .4s ease; }
+  body.panel-off .fadeable{ opacity:0.4; filter:grayscale(0.4); pointer-events:none; }
+
+  /* ---------- 3D panel viewer ---------- */
+  .panel3d-card{
+    position:relative;
+    padding:16px 16px 14px;
+    margin-bottom:14px;
+    overflow:hidden;
+  }
+  .panel3d-top{
+    display:flex; justify-content:space-between; align-items:center;
+    margin-bottom:4px;
+  }
+  .panel3d-label{ font-size:0.72rem; color:var(--text-faint); }
+  .live-badge{
+    display:flex; align-items:center; gap:5px;
+    font-size:0.68rem; color:var(--teal); font-family:'IBM Plex Mono', monospace;
+  }
+  .live-badge .pulse{
+    width:6px; height:6px; border-radius:50%; background:var(--teal);
+    box-shadow:0 0 0 0 rgba(79,176,174,0.6);
+    animation:pulse 1.8s ease-out infinite;
+  }
+  @keyframes pulse{
+    0%{ box-shadow:0 0 0 0 rgba(79,176,174,0.5); }
+    100%{ box-shadow:0 0 0 8px rgba(79,176,174,0); }
+  }
+  .sky-value{
+    font-family:'Space Grotesk', sans-serif;
+    font-size:1.5rem;
+    font-weight:600;
+    margin:2px 0 10px;
+  }
+  .sky-value span{ color:var(--gold); }
+
+  #panel3dCanvas{
+    position:relative;
+    width:100%;
+    height:230px;
+    border-radius:14px;
+    overflow:hidden;
+    background:radial-gradient(ellipse at 50% 30%, rgba(79,176,174,0.08), transparent 65%), var(--bg-deep);
+    touch-action:none;
+  }
+  #panel3dCanvas canvas{ display:block; width:100%; height:100%; }
+  .drag-hint{
+    position:absolute;
+    bottom:8px; right:12px;
+    font-size:0.64rem;
+    color:var(--text-faint);
+    background:rgba(12,14,23,0.55);
+    padding:3px 8px;
+    border-radius:999px;
+    pointer-events:none;
+  }
+
+  .angle-readout{
+    display:flex; gap:22px;
+    margin-top:14px; padding-top:14px;
+    border-top:1px solid var(--line);
+  }
+  .angle-readout div{ flex:1; }
+  .angle-readout .k{ font-size:0.7rem; color:var(--text-faint); margin-bottom:3px; }
+  .angle-readout .v{ font-family:'IBM Plex Mono', monospace; font-size:1.05rem; color:var(--text); font-weight:500; }
+
+  /* ---------- Stat row ---------- */
+  .stat-row{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:14px; }
+
+  .offline-banner{
+    display:none;
+    gap:10px;
+    align-items:flex-start;
+    background:linear-gradient(135deg, rgba(217,105,79,0.16), rgba(217,105,79,0.05));
+    border:1px solid #8a3f2e;
+    border-radius:var(--radius-sm);
+    padding:12px 14px;
+    margin-bottom:16px;
+    font-size:0.78rem;
+    color:var(--text-muted);
+    line-height:1.5;
+  }
+  .offline-banner b{ color:var(--danger); }
+  body.device-offline .offline-banner{ display:flex; }
+  .stat-card{ padding:15px 16px; }
+  .stat-card .k{ font-size:0.74rem; color:var(--text-muted); margin-bottom:6px; }
+  .stat-card .v{ font-family:'Space Grotesk', sans-serif; font-size:1.3rem; font-weight:600; }
+  .stat-card .v.teal{ color:var(--teal); }
+  .stat-card .v small{ font-size:0.7rem; color:var(--text-muted); font-weight:400; margin-left:2px; }
+
+  /* ---------- Section titles ---------- */
+  .section-title{ font-size:0.95rem; font-weight:600; margin:22px 0 12px 2px; color:var(--text); }
+
+  /* ---------- Chart card ---------- */
+  .chart-card{ padding:16px 16px 6px; margin-bottom:14px; }
+  .chart-head{ display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px; gap:10px; }
+  .chart-stats{ display:flex; gap:18px; }
+  .chart-stats > div{ display:flex; flex-direction:column; gap:3px; }
+  .cs-k{ font-size:0.68rem; color:var(--text-faint); }
+  .cs-v{ font-family:'IBM Plex Mono', monospace; font-size:0.95rem; color:var(--text); }
+  #chNow{ color:var(--teal); }
+  .peak-summary{ font-size:0.85rem; color:var(--text); line-height:1.5; margin-top:5px; }
+  .peak-summary b{ color:var(--gold); font-family:'IBM Plex Mono', monospace; }
+
+  .range-pill{ display:flex; background:var(--bg-deep); border:1px solid var(--line); border-radius:999px; padding:2px; height:fit-content; }
+  .range-btn{ border:none; background:transparent; color:var(--text-faint); font-family:'IBM Plex Sans', sans-serif; font-size:0.7rem; font-weight:500; padding:6px 10px; border-radius:999px; cursor:pointer; }
+  .range-btn.active{ background:var(--surface-2); color:var(--text); }
+
+  .chart-wrap{ position:relative; width:100%; }
+  .chart-empty{ display:none; text-align:center; font-size:0.78rem; color:var(--text-faint); padding:30px 10px 34px; }
+  .chart-card.empty .chart-wrap{ display:none; }
+  .chart-card.empty .chart-empty{ display:block; }
+
+  .export-btn{
+    display:block;
+    width:100%;
+    margin-top:10px;
+    padding:10px;
+    background:transparent;
+    border:1px solid var(--line);
+    border-radius:var(--radius-sm);
+    color:var(--text-muted);
+    font-family:'IBM Plex Sans', sans-serif;
+    font-size:0.78rem;
+    font-weight:500;
+    cursor:pointer;
+    transition:background .2s ease, color .2s ease;
+  }
+  .export-btn:hover{ background:var(--surface-2); color:var(--text); }
+
+  /* ---------- Sensor grid ---------- */
+  .sensor-grid{
+    display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr;
+    gap:2px; background:var(--line); border:1px solid var(--line);
+    border-radius:var(--radius-sm); overflow:hidden; aspect-ratio:1/1; margin-bottom:14px;
+    box-shadow:0 14px 30px -16px rgba(0,0,0,0.6);
+  }
+  .sensor-cell{
+    background:linear-gradient(160deg, rgba(37,42,74,0.95), rgba(24,28,47,0.95));
+    display:flex; flex-direction:column; justify-content:center; align-items:center;
+    gap:6px; padding:10px; position:relative;
+  }
+  .sensor-cell .pos{ position:absolute; top:9px; left:10px; font-size:0.62rem; color:var(--text-faint); font-family:'IBM Plex Mono', monospace; }
+  .sensor-cell .bulb{ width:10px; height:10px; border-radius:50%; background:var(--gold-dim); transition:background .3s ease, box-shadow .3s ease; }
+  .sensor-cell .val{ font-family:'IBM Plex Mono', monospace; font-size:1rem; font-weight:500; }
+
+  /* ---------- Mode toggle ---------- */
+  .mode-block{ padding:16px; margin-bottom:12px; }
+  .mode-head{ display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; }
+  .mode-head h3{ font-size:0.95rem; font-weight:600; }
+  .mode-desc{ font-size:0.78rem; color:var(--text-muted); line-height:1.45; margin-bottom:14px; }
+
+  .toggle-pill{ position:relative; display:flex; background:var(--bg-deep); border:1px solid var(--line); border-radius:999px; padding:3px; }
+  .toggle-pill button{
+    flex:1; border:none; background:transparent; color:var(--text-muted);
+    font-family:'IBM Plex Sans', sans-serif; font-size:0.84rem; font-weight:500;
+    padding:9px 0; border-radius:999px; cursor:pointer; position:relative; z-index:1;
+    transition:color .3s ease;
+  }
+  .toggle-pill button.active{ color:var(--bg-deep); }
+  .toggle-thumb{
+    position:absolute; top:3px; bottom:3px; left:3px; width:calc(50% - 3px);
+    background:var(--teal); border-radius:999px; transition:transform .32s cubic-bezier(.4,0,.2,1);
+    z-index:0;
+  }
+  .toggle-thumb.manual{ transform:translateX(100%); background:var(--gold); }
+
+  .manual-controls{ max-height:0; overflow:hidden; transition:max-height .38s ease, margin-top .38s ease; }
+  .manual-controls.open{ max-height:220px; margin-top:16px; }
+  .slider-row{ margin-bottom:16px; }
+  .slider-row:last-child{ margin-bottom:0; }
+  .slider-row .lbl{ display:flex; justify-content:space-between; font-size:0.8rem; color:var(--text-muted); margin-bottom:8px; }
+  .slider-row .lbl b{ color:var(--text); font-family:'IBM Plex Mono', monospace; font-weight:500; }
+  input[type="range"]{ -webkit-appearance:none; width:100%; height:4px; border-radius:2px; background:var(--line); outline:none; }
+  input[type="range"]::-webkit-slider-thumb{
+    -webkit-appearance:none; width:20px; height:20px; border-radius:50%; background:var(--gold);
+    border:3px solid var(--bg-deep); box-shadow:0 0 0 1px var(--gold); cursor:pointer; margin-top:-8px;
+  }
+  input[type="range"]::-webkit-slider-runnable-track{ height:4px; border-radius:2px; }
+  input[type="range"]:disabled::-webkit-slider-thumb{ background:var(--text-faint); box-shadow:none; }
+
+  footer{ text-align:center; font-size:0.72rem; color:var(--text-faint); margin-top:22px; padding-bottom:8px; }
+
+  @media (prefers-reduced-motion: reduce){
+    .toggle-thumb, .manual-controls{ transition:none !important; }
+  }
+
+  /* ---------- Pengaturan & kalibrasi ---------- */
+  .settings-card{ padding:16px; margin-bottom:16px; }
+  .settings-desc{ font-size:0.78rem; color:var(--text-muted); line-height:1.45; margin-bottom:16px; }
+  .form-row{ margin-bottom:14px; }
+  .form-row label{ display:block; font-size:0.76rem; color:var(--text-muted); margin-bottom:6px; }
+  .form-row-2{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .form-row-2 .form-row{ margin-bottom:14px; }
+  .settings-card input[type="number"]{
+    width:100%;
+    background:var(--bg-deep);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:10px 12px;
+    color:var(--text);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.9rem;
+    outline:none;
+  }
+  .settings-card input[type="number"]:focus{ border-color:var(--gold-dim); }
+  .settings-divider{ height:1px; background:var(--line); margin:6px 0 16px; }
+  .schedule-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+  .schedule-head label{ font-size:0.84rem; color:var(--text); font-weight:500; }
+  .save-btn{
+    width:100%;
+    padding:12px;
+    margin-top:4px;
+    background:var(--gold);
+    border:none;
+    border-radius:10px;
+    color:#1a1200;
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:600;
+    font-size:0.88rem;
+    cursor:pointer;
+    transition:filter .2s ease;
+  }
+  .save-btn:hover{ filter:brightness(1.08); }
+  .save-status{ text-align:center; font-size:0.75rem; color:var(--teal); margin-top:8px; min-height:1em; }
+  .telegram-note{
+    margin-top:14px;
+    padding-top:14px;
+    border-top:1px solid var(--line);
+    font-size:0.72rem;
+    color:var(--text-faint);
+    line-height:1.5;
+  }
+  .telegram-note code{ background:var(--bg-deep); padding:1px 5px; border-radius:4px; font-family:'IBM Plex Mono', monospace; }
+
+  /* ---------- Bottom tab navigation (mobile) ---------- */
+  .bottom-nav{
+    position:fixed;
+    left:0; right:0; bottom:0;
+    z-index:30;
+    display:flex;
+    max-width:460px;
+    margin:0 auto;
+    background:rgba(20,23,39,0.85);
+    backdrop-filter:blur(14px);
+    border-top:1px solid var(--line);
+    padding:8px 6px calc(8px + env(safe-area-inset-bottom, 0px));
+  }
+  .nav-btn{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:3px;
+    min-height:48px;
+    background:transparent;
+    border:none;
+    color:var(--text-faint);
+    font-family:'IBM Plex Sans', sans-serif;
+    font-size:0.66rem;
+    font-weight:500;
+    border-radius:12px;
+    cursor:pointer;
+    transition:color .2s ease, background .2s ease, transform .15s ease;
+  }
+  .nav-btn .nav-icon{ font-size:1.15rem; line-height:1; filter:grayscale(1) opacity(0.6); transition:filter .2s ease; }
+  .nav-btn.active{ color:var(--gold); background:rgba(232,163,61,0.09); }
+  .nav-btn.active .nav-icon{ filter:none; }
+  .nav-btn:active{ transform:scale(0.92); }
+
+  /* ---------- Polish interaksi umum (feedback tekan, hover kartu) ---------- */
+  .glass-card:active{ transform:scale(0.995); }
+  .power-switch:active .knob, .toggle-pill button:active, .range-btn:active,
+  .save-btn:active, .export-btn:active, .nav-btn:active{ filter:brightness(0.94); }
+  .save-btn, .export-btn, .toggle-pill button, .range-btn, .power-switch{ -webkit-tap-highlight-color:transparent; }
+  input[type="range"]::-webkit-slider-thumb{ width:22px; height:22px; margin-top:-9px; }
+  .section-title{ display:flex; align-items:center; gap:6px; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header>
+    <h1>Solar Tracker</h1>
+    <div class="status"><span class="dot" id="connDot"></span><span id="connText">Menghubungkan…</span></div>
+  </header>
+
+  <!-- BANNER OFFLINE -->
+  <div class="offline-banner" id="offlineBanner">
+    <span>⚠️</span>
+    <div>Perangkat tidak terpantau — data terakhir <b id="lastSeenText">—</b> yang lalu. Cek koneksi WiFi/power ESP32.</div>
+  </div>
+
+  <!-- POWER TOGGLE -->
+  <section id="tab-beranda" class="tab-section">
+  <div class="power-card glass-card">
+    <div class="power-info">
+      <div class="k" id="powerLabel">Panel aktif</div>
+      <div class="d" id="powerDesc">Tracking berjalan normal.</div>
+    </div>
+    <div class="power-switch on" id="powerSwitch" role="switch" aria-checked="true">
+      <div class="knob"></div>
+    </div>
+  </div>
+
+  <!-- 3D VIEWER -->
+  <div class="panel3d-card glass-card fadeable">
+    <div class="panel3d-top">
+      <span class="panel3d-label">Posisi panel — 3D live</span>
+      <span class="live-badge"><span class="pulse"></span>LIVE</span>
+    </div>
+    <div class="sky-value">Menghadap <span id="headingWord">—</span></div>
+    <div id="panel3dCanvas">
+      <span class="drag-hint">seret untuk putar</span>
+    </div>
+    <div class="angle-readout">
+      <div><div class="k">Azimuth</div><div class="v" id="azVal">— °</div></div>
+      <div><div class="k">Elevasi</div><div class="v" id="elVal">— °</div></div>
+    </div>
+  </div>
+
+  <!-- STAT ROW -->
+  <div class="stat-row fadeable">
+    <div class="stat-card glass-card">
+      <div class="k">Tegangan panel</div>
+      <div class="v teal" id="voltVal">— <small>V</small></div>
+    </div>
+    <div class="stat-card glass-card">
+      <div class="k">Arus panel</div>
+      <div class="v teal" id="currentVal">— <small>A</small></div>
+    </div>
+    <div class="stat-card glass-card">
+      <div class="k">Daya sekarang</div>
+      <div class="v" id="powerWattVal">— <small>W</small></div>
+    </div>
+    <div class="stat-card glass-card">
+      <div class="k">Mode aktif</div>
+      <div class="v" id="modeVal">—</div>
+    </div>
+  </div>
+
+  </section>
+
+  <!-- ENERGI -->
+  <section id="tab-riwayat" class="tab-section">
+  <div class="section-title">Energi dihasilkan</div>
+  <div class="stat-row fadeable" style="grid-template-columns:1fr 1fr;">
+    <div class="stat-card glass-card">
+      <div class="k">Hari ini</div>
+      <div class="v" id="energyTodayVal">— <small>Wh</small></div>
+    </div>
+    <div class="stat-card glass-card">
+      <div class="k">Total sepanjang waktu</div>
+      <div class="v" id="energyTotalVal">— <small>kWh</small></div>
+    </div>
+  </div>
+
+  <div class="chart-card glass-card fadeable" id="dailyEnergyCard">
+    <div class="chart-head">
+      <div><span class="cs-k">Energi harian</span></div>
+    </div>
+    <div class="chart-wrap"><canvas id="dailyEnergyChart" height="150"></canvas></div>
+    <div class="chart-empty">Belum ada catatan harian</div>
+  </div>
+
+  <div class="stat-card glass-card fadeable" id="comparisonCard" style="display:none; margin-bottom:16px;">
+    <div class="k">Dibanding panel statis (hari ini)</div>
+    <div class="v" id="comparisonVal">—</div>
+  </div>
+
+  <!-- RIWAYAT TEGANGAN -->
+  <div class="section-title">Riwayat tegangan</div>
+  <div class="chart-card glass-card fadeable" id="voltageChartCard">
+    <div class="chart-head">
+      <div class="chart-stats">
+        <div><span class="cs-k">Sekarang</span><span class="cs-v" id="chNow">— V</span></div>
+        <div><span class="cs-k">Rata-rata</span><span class="cs-v" id="chAvg">— V</span></div>
+        <div><span class="cs-k">Puncak</span><span class="cs-v" id="chMax">— V</span></div>
+      </div>
+      <div class="range-pill">
+        <button class="range-btn active" data-hours="24">24 jam</button>
+        <button class="range-btn" data-hours="168">7 hari</button>
+      </div>
+    </div>
+    <div class="chart-wrap"><canvas id="voltageChart" height="150"></canvas></div>
+    <div class="chart-empty">Belum ada data riwayat — menunggu pencatatan pertama dari ESP32.</div>
+    <button class="export-btn" id="exportCsvBtn">⬇ Ekspor riwayat</button>
+  </div>
+
+  <!-- JAM PALING EFEKTIF -->
+  <div class="section-title">Jam paling efektif</div>
+  <div class="chart-card glass-card fadeable" id="hourlyChartCard">
+    <div class="chart-head">
+      <div>
+        <span class="cs-k">Rata-rata tegangan tiap jam</span>
+        <div class="peak-summary" id="peakHourText">—</div>
+      </div>
+    </div>
+    <div class="chart-wrap"><canvas id="hourlyChart" height="150"></canvas></div>
+    <div class="chart-empty">Belum ada cukup data untuk menghitung rata-rata per jam.</div>
+  </div>
+
+  </section>
+
+  <!-- SENSOR GRID -->
+  <section id="tab-sensor" class="tab-section">
+  <div class="section-title">Sensor cahaya (LDR)</div>
+  <div class="sensor-grid fadeable">
+    <div class="sensor-cell"><span class="pos">KI-ATAS</span><div class="bulb" id="bulbTL"></div><div class="val" id="valTL">—</div></div>
+    <div class="sensor-cell"><span class="pos">KA-ATAS</span><div class="bulb" id="bulbTR"></div><div class="val" id="valTR">—</div></div>
+    <div class="sensor-cell"><span class="pos">KI-BAWAH</span><div class="bulb" id="bulbBL"></div><div class="val" id="valBL">—</div></div>
+    <div class="sensor-cell"><span class="pos">KA-BAWAH</span><div class="bulb" id="bulbBR"></div><div class="val" id="valBR">—</div></div>
+  </div>
+
+  </section>
+
+  <!-- MODE + MANUAL CONTROL -->
+  <section id="tab-atur" class="tab-section">
+  <div class="mode-block glass-card fadeable">
+    <div class="mode-head"><h3>Kontrol tracking</h3></div>
+
+    <div class="toggle-pill">
+      <div class="toggle-thumb" id="toggleThumb"></div>
+      <button id="btnAuto" class="active">Auto</button>
+      <button id="btnManual">Manual</button>
+    </div>
+
+    <div class="manual-controls" id="manualControls">
+      <div class="slider-row">
+        <div class="lbl"><span>Azimuth</span><b id="azSliderLabel">90°</b></div>
+        <input type="range" id="azSlider" min="10" max="170" value="90" disabled />
+      </div>
+      <div class="slider-row">
+        <div class="lbl"><span>Elevasi</span><b id="elSliderLabel">90°</b></div>
+        <input type="range" id="elSlider" min="10" max="170" value="90" disabled />
+      </div>
+    </div>
+  </div>
+
+  <!-- PENGATURAN & KALIBRASI -->
+  <div class="section-title">Pengaturan & kalibrasi</div>
+  <div class="settings-card glass-card fadeable">
+    <div class="settings-desc">Nilai ini dibaca langsung oleh ESP32 dari Firebase</div>
+
+    <div class="form-row">
+      <label for="cfgLightThreshold">Ambang cahaya (toleransi tracking)</label>
+      <input type="number" id="cfgLightThreshold" min="1" max="500" />
+    </div>
+    <div class="form-row-2">
+      <div class="form-row"><label for="cfgServoMin">Batas servo minimum (°)</label><input type="number" id="cfgServoMin" min="0" max="180" /></div>
+      <div class="form-row"><label for="cfgServoMax">Batas servo maksimum (°)</label><input type="number" id="cfgServoMax" min="0" max="180" /></div>
+    </div>
+    <div class="form-row-2">
+      <div class="form-row"><label for="cfgStandbyAz">Standby azimuth (°)</label><input type="number" id="cfgStandbyAz" min="0" max="180" /></div>
+      <div class="form-row"><label for="cfgStandbyEl">Standby elevasi (°)</label><input type="number" id="cfgStandbyEl" min="0" max="180" /></div>
+    </div>
+    <div class="form-row">
+      <label for="cfgLowVoltage">Ambang alert tegangan rendah (V)</label>
+      <input type="number" id="cfgLowVoltage" min="0" max="50" step="0.1" />
+    </div>
+
+    <div class="settings-divider"></div>
+
+    <div class="schedule-head">
+      <label>Jadwal otomatis</label>
+      <div class="power-switch" id="scheduleSwitch"><div class="knob"></div></div>
+    </div>
+    <div class="form-row-2">
+      <div class="form-row"><label for="cfgParkHour">Mulai Mati</label><input type="number" id="cfgParkHour" min="0" max="23" /></div>
+      <div class="form-row"><label for="cfgWakeHour">Aktif lagi</label><input type="number" id="cfgWakeHour" min="0" max="23" /></div>
+    </div>
+
+    <button class="save-btn" id="saveConfigBtn">Simpan pengaturan</button>
+    <div class="save-status" id="saveStatus"></div>
+
+    <div class="telegram-note">💬 Notifikasi Telegram (isi <code>TELEGRAM_BOT_TOKEN</code> &amp; set <code>TELEGRAM_ENABLED</code> ke <code>true</code>), bukan dari halaman ini.</div>
+  </div>
+
+  </section>
+
+  <footer id="lastUpdated">Menunggu data pertama…</footer>
+
+</div>
+
+<!-- BOTTOM TAB NAVIGATION (mobile) -->
+<nav class="bottom-nav">
+  <button class="nav-btn active" data-target="tab-beranda"><span class="nav-icon">🏠</span><span>Beranda</span></button>
+  <button class="nav-btn" data-target="tab-riwayat"><span class="nav-icon">📊</span><span>Riwayat</span></button>
+  <button class="nav-btn" data-target="tab-sensor"><span class="nav-icon">☀️</span><span>Sensor</span></button>
+  <button class="nav-btn" data-target="tab-atur"><span class="nav-icon">⚙️</span><span>Atur</span></button>
+</nav>
+
+<!-- ======================= FIREBASE (classic, mengisi window.firebase) ======================= -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+
+<!-- ======================= APLIKASI UTAMA ======================= -->
+<script>
+  // ============ ISI KONFIGURASI FIREBASE KAMU DI SINI ============
+  const firebaseConfig = {
+    apiKey: "ISI_API_KEY_FIREBASE",
+    authDomain: "NAMA-PROJECT.firebaseapp.com",
+    databaseURL: "https://NAMA-PROJECT-default-rtdb.asia-southeast1.firebasedatabase.app/",
+    projectId: "NAMA-PROJECT",
+  };
+  const LOGIN_EMAIL = "email_akun_firebase@example.com";
+  const LOGIN_PASSWORD = "password_akun_firebase";
+  // ==================================================================
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+  const auth = firebase.auth();
+
+  const el = (id) => document.getElementById(id);
+  const connDot = el('connDot'), connText = el('connText');
+
+  // ---------- Auth & koneksi ----------
+  auth.signInWithEmailAndPassword(LOGIN_EMAIL, LOGIN_PASSWORD).catch((err) => {
+    connText.textContent = "Gagal login: cek email/password";
+    connDot.className = "dot offline";
+    console.error(err);
+  });
+
+  db.ref(".info/connected").on("value", (snap) => {
+    if (snap.val() === true) { connDot.className = "dot live"; connText.textContent = "Live"; }
+    else { connDot.className = "dot offline"; connText.textContent = "Terputus"; }
+  });
+
+  let lastAz = 90, lastEl = 90, manualMode = false;
+
+  function touchUpdated() {
+    el('lastUpdated').textContent = 'Update terakhir ' + new Date().toLocaleTimeString('id-ID');
+  }
+
+  function computeHeadingWord(az) {
+    const t = Math.min(Math.max((az - 10) / 160, 0), 1);
+    if (t < 0.4) return "Timur";
+    if (t > 0.6) return "Barat";
+    return "Tengah (atas)";
+  }
+
+  // ================= SCENE 3D (dimuat terpisah, tidak menghalangi UI lain) =================
+  // Nilai default no-op: kalau 3D gagal dimuat, panggilan ini tidak melakukan apa-apa
+  // sehingga tombol power/mode/slider di bawah tetap berfungsi normal.
+  let setTargetAngles = function () {};
+  let setPower3D = function () {};
+
+  (async function initScene3D() {
+    try {
+      const THREE = await import('https://unpkg.com/three@0.160.0/build/three.module.js');
+      const { OrbitControls } = await import('https://unpkg.com/three@0.160.0/examples/jsm/controls/OrbitControls.js');
+
+      const container = el('panel3dCanvas');
+      let scene, camera, renderer, controls;
+      let azimuthPivot, elevationPivot, sunMesh, sunMat, glowMat;
+      let targetAzDeg = 0, targetElDeg = 35, currentAzDeg = 0, currentElDeg = 35;
+
+      function init3D() {
+    scene = new THREE.Scene();
+    const w = container.clientWidth, h = container.clientHeight;
+
+    camera = new THREE.PerspectiveCamera(42, w / h, 0.1, 100);
+    camera.position.set(5.2, 3.6, 6.2);
+
+    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(w, h);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    container.appendChild(renderer.domElement);
+
+    controls = new OrbitControls(camera, renderer.domElement);
+    controls.target.set(0, 1.1, 0);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.08;
+    controls.minDistance = 4;
+    controls.maxDistance = 11;
+    controls.maxPolarAngle = Math.PI * 0.49;
+    controls.autoRotate = true;
+    controls.autoRotateSpeed = 0.55;
+    controls.enablePan = false;
+
+    scene.add(new THREE.AmbientLight(0x8896c4, 0.6));
+    const dirLight = new THREE.DirectionalLight(0xfff2d9, 0.85);
+    dirLight.position.set(4, 6, 2);
+    scene.add(dirLight);
+    const fillLight = new THREE.PointLight(0x4fb0ae, 0.5, 20);
+    fillLight.position.set(-4, 3, -3);
+    scene.add(fillLight);
+
+    // Tanah
+    const ground = new THREE.Mesh(
+      new THREE.CircleGeometry(6, 48),
+      new THREE.MeshStandardMaterial({ color: 0x171b30, roughness: 0.95, metalness: 0.05 })
+    );
+    ground.rotation.x = -Math.PI / 2;
+    scene.add(ground);
+    const grid = new THREE.GridHelper(12, 24, 0x2c3153, 0x20243f);
+    grid.position.y = 0.005;
+    scene.add(grid);
+
+    // Tiang
+    const pole = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.08, 0.11, 1.1, 16),
+      new THREE.MeshStandardMaterial({ color: 0x2c3153, metalness: 0.6, roughness: 0.4 })
+    );
+    pole.position.y = 0.55;
+    scene.add(pole);
+
+    // Pivot azimuth (putar sumbu Y) & elevasi (anak dari azimuth, putar sumbu X)
+    azimuthPivot = new THREE.Group();
+    azimuthPivot.position.y = 1.1;
+    scene.add(azimuthPivot);
+
+    elevationPivot = new THREE.Group();
+    azimuthPivot.add(elevationPivot);
+
+    // Badan panel
+    const panelGroup = new THREE.Group();
+    const panelMesh = new THREE.Mesh(
+      new THREE.BoxGeometry(2.0, 0.06, 1.3),
+      new THREE.MeshStandardMaterial({ color: 0x121a33, metalness: 0.4, roughness: 0.45 })
+    );
+    panelGroup.add(panelMesh);
+
+    // Garis sel surya di permukaan panel
+    const lineMat = new THREE.LineBasicMaterial({ color: 0x3f5a8a });
+    for (let i = -3; i <= 3; i++) {
+      const pts = [new THREE.Vector3(i * 0.28, 0.032, -0.62), new THREE.Vector3(i * 0.28, 0.032, 0.62)];
+      panelGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), lineMat));
+    }
+    for (let j = -2; j <= 2; j++) {
+      const pts = [new THREE.Vector3(-0.98, 0.032, j * 0.26), new THREE.Vector3(0.98, 0.032, j * 0.26)];
+      panelGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), lineMat));
+    }
+
+    panelGroup.position.set(0, 0.05, 0);
+    elevationPivot.add(panelGroup);
+
+    // Matahari
+    sunMat = new THREE.MeshBasicMaterial({ color: 0xf5c568 });
+    sunMesh = new THREE.Mesh(new THREE.SphereGeometry(0.2, 24, 24), sunMat);
+    glowMat = new THREE.MeshBasicMaterial({ color: 0xe8a33d, transparent: true, opacity: 0.25 });
+    const glow = new THREE.Mesh(new THREE.SphereGeometry(0.4, 24, 24), glowMat);
+    sunMesh.add(glow);
+    scene.add(sunMesh);
+
+    window.addEventListener('resize', onResize3D);
+    animate3D();
+  }
+
+  function onResize3D() {
+    const w = container.clientWidth, h = container.clientHeight;
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+    renderer.setSize(w, h);
+  }
+
+  setTargetAngles = function (azimuthServo, elevasiServo) {
+    // servo 10-170 derajat -> azimuth panel -80..80 derajat, elevasi 0(datar)-90(tegak)
+    targetAzDeg = ((azimuthServo - 90) / 80) * 80;
+    targetElDeg = ((elevasiServo - 10) / 160) * 90;
+  };
+
+  setPower3D = function (isOn) {
+    const targetOpacity = isOn ? 0.25 : 0.03;
+    glowMat.opacity = targetOpacity;
+    sunMat.color.set(isOn ? 0xf5c568 : 0x555a72);
+  };
+
+  function animate3D() {
+    requestAnimationFrame(animate3D);
+    currentAzDeg += (targetAzDeg - currentAzDeg) * 0.06;
+    currentElDeg += (targetElDeg - currentElDeg) * 0.06;
+
+    azimuthPivot.rotation.y = THREE.MathUtils.degToRad(currentAzDeg);
+    elevationPivot.rotation.x = -THREE.MathUtils.degToRad(currentElDeg);
+
+    const azRad = THREE.MathUtils.degToRad(currentAzDeg);
+    const elRad = THREE.MathUtils.degToRad(Math.max(currentElDeg, 4));
+    const R = 4.6;
+    sunMesh.position.set(
+      Math.sin(azRad) * Math.cos(elRad) * R,
+      1.1 + Math.sin(elRad) * R * 0.85,
+      -Math.cos(azRad) * Math.cos(elRad) * R
+    );
+
+    controls.update();
+    renderer.render(scene, camera);
+  }
+
+      init3D();
+
+      // Kalau data servo dari Firebase sudah sempat masuk sebelum 3D selesai dimuat,
+      // langsung terapkan posisi terakhirnya sekarang.
+      setTargetAngles(lastAz, lastEl);
+    } catch (err) {
+      console.warn('Visualisasi 3D tidak dapat dimuat, dashboard tetap berjalan tanpa tampilan 3D:', err);
+      const canvasBox = el('panel3dCanvas');
+      if (canvasBox) {
+        canvasBox.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;padding:20px;text-align:center;font-size:0.78rem;color:var(--text-faint);line-height:1.5;">Visualisasi 3D tidak dapat dimuat (cek koneksi internet atau buka lewat Live Server, bukan double-click file).<br>Data &amp; kontrol lain tetap berjalan normal.</div>';
+      }
+    }
+  })();
+
+  // ---------- Listener data servo ----------
+  db.ref('/solar_tracker/servo/azimuth').on('value', (s) => {
+    const v = s.val() ?? 90;
+    el('azVal').textContent = v + " °";
+    el('headingWord').textContent = computeHeadingWord(v);
+    if (!manualMode) el('azSlider').value = v;
+    el('azSliderLabel').textContent = v + "°";
+    lastAz = v;
+    setTargetAngles(lastAz, lastEl);
+    touchUpdated();
+  });
+
+  db.ref('/solar_tracker/servo/elevasi').on('value', (s) => {
+    const v = s.val() ?? 90;
+    el('elVal').textContent = v + " °";
+    if (!manualMode) el('elSlider').value = v;
+    el('elSliderLabel').textContent = v + "°";
+    lastEl = v;
+    setTargetAngles(lastAz, lastEl);
+    touchUpdated();
+  });
+
+  db.ref('/solar_tracker/voltage').on('value', (s) => {
+    const v = s.val();
+    el('voltVal').innerHTML = (v != null ? v.toFixed(2) : '—') + ' <small>V</small>';
+    touchUpdated();
+  });
+
+  const ldrMap = { top_left: ['valTL', 'bulbTL'], top_right: ['valTR', 'bulbTR'], bottom_left: ['valBL', 'bulbBL'], bottom_right: ['valBR', 'bulbBR'] };
+  Object.keys(ldrMap).forEach((key) => {
+    db.ref('/solar_tracker/ldr/' + key).on('value', (s) => {
+      const v = s.val();
+      const [valId, bulbId] = ldrMap[key];
+      el(valId).textContent = v ?? '—';
+      if (v != null) {
+        const brightness = Math.min(v / 4095, 1);
+        el(bulbId).style.background = `rgba(232,163,61,${0.25 + brightness * 0.75})`;
+        el(bulbId).style.boxShadow = brightness > 0.5 ? `0 0 10px 2px rgba(232,163,61,${brightness * 0.6})` : 'none';
+      }
+      touchUpdated();
+    });
+  });
+
+  db.ref('/solar_tracker/mode_auto').on('value', (s) => setModeUI(s.val() !== false, false));
+
+  db.ref('/solar_tracker/status').on('value', (s) => {
+    const status = s.val();
+    if (status) el('powerDesc').textContent = status === 'AKTIF' ? 'Tracking berjalan normal.' : 'Panel di posisi standby, servo dilepas.';
+  });
+
+  db.ref('/solar_tracker/power').on('value', (s) => setPowerUI(s.val() !== false, false));
+
+  // ---------- Mode toggle ----------
+  const btnAuto = el('btnAuto'), btnManual = el('btnManual');
+  const thumb = el('toggleThumb'), manualPanel = el('manualControls');
+  const azSlider = el('azSlider'), elSlider = el('elSlider');
+
+  function setModeUI(isAuto, pushToFirebase) {
+    manualMode = !isAuto;
+    btnAuto.classList.toggle('active', isAuto);
+    btnManual.classList.toggle('active', !isAuto);
+    thumb.classList.toggle('manual', !isAuto);
+    manualPanel.classList.toggle('open', !isAuto);
+    azSlider.disabled = isAuto;
+    elSlider.disabled = isAuto;
+    el('modeVal').textContent = isAuto ? 'Auto' : 'Manual';
+    if (pushToFirebase) db.ref('/solar_tracker/mode_auto').set(isAuto);
+  }
+  btnAuto.addEventListener('click', () => setModeUI(true, true));
+  btnManual.addEventListener('click', () => setModeUI(false, true));
+
+  let azDebounce, elDebounce;
+  azSlider.addEventListener('input', () => {
+    el('azSliderLabel').textContent = azSlider.value + '°';
+    clearTimeout(azDebounce);
+    azDebounce = setTimeout(() => db.ref('/solar_tracker/manual/azimuth').set(parseInt(azSlider.value)), 180);
+  });
+  elSlider.addEventListener('input', () => {
+    el('elSliderLabel').textContent = elSlider.value + '°';
+    clearTimeout(elDebounce);
+    elDebounce = setTimeout(() => db.ref('/solar_tracker/manual/elevasi').set(parseInt(elSlider.value)), 180);
+  });
+
+  // ---------- Power toggle ----------
+  const powerSwitch = el('powerSwitch'), powerLabel = el('powerLabel');
+  let panelOn = true;
+
+  function setPowerUI(isOn, pushToFirebase) {
+    panelOn = isOn;
+    powerSwitch.classList.toggle('on', isOn);
+    powerSwitch.setAttribute('aria-checked', isOn);
+    document.body.classList.toggle('panel-off', !isOn);
+    powerLabel.textContent = isOn ? 'Panel aktif' : 'Panel nonaktif';
+    if (!isOn) el('powerDesc').textContent = 'Panel akan kembali ke posisi standby…';
+    setPower3D(isOn);
+    if (pushToFirebase) db.ref('/solar_tracker/power').set(isOn);
+  }
+  powerSwitch.addEventListener('click', () => setPowerUI(!panelOn, true));
+
+  // ---------- Riwayat tegangan ----------
+  let voltageChart = null;
+  let hourlyChart = null;
+  let currentHours = 24;
+  let lastLoadedVoltagePoints = [];
+
+  function formatTime(epochSec, hours) {
+    const d = new Date(epochSec * 1000);
+    if (hours <= 24) return d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+    return d.toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit' }) + ' ' + d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+  }
+
+  function renderChart(points) {
+    const card = el('voltageChartCard');
+    if (!points.length) { card.classList.add('empty'); return; }
+    card.classList.remove('empty');
+
+    const labels = points.map((p) => formatTime(p.t, currentHours));
+    const values = points.map((p) => p.v);
+
+    el('chNow').textContent = values[values.length - 1].toFixed(2) + ' V';
+    el('chAvg').textContent = (values.reduce((a, b) => a + b, 0) / values.length).toFixed(2) + ' V';
+    el('chMax').textContent = Math.max(...values).toFixed(2) + ' V';
+
+    if (voltageChart) {
+      voltageChart.data.labels = labels;
+      voltageChart.data.datasets[0].data = values;
+      voltageChart.update();
+      return;
+    }
+    const ctx = el('voltageChart').getContext('2d');
+    voltageChart = new Chart(ctx, {
+      type: 'line',
+      data: { labels, datasets: [{ data: values, borderColor: '#4fb0ae', backgroundColor: 'rgba(79,176,174,0.12)', borderWidth: 2, pointRadius: 0, pointHoverRadius: 4, pointHoverBackgroundColor: '#4fb0ae', fill: true, tension: 0.35 }] },
+      options: {
+        responsive: true, maintainAspectRatio: false, animation: { duration: 350 },
+        plugins: { legend: { display: false }, tooltip: { backgroundColor: '#1b1f33', borderColor: '#2c3153', borderWidth: 1, titleColor: '#f1efe9', bodyColor: '#f1efe9', padding: 10, displayColors: false, callbacks: { label: (c) => c.parsed.y.toFixed(2) + ' V' } } },
+        scales: { x: { ticks: { color: '#5c6084', maxTicksLimit: 6, font: { size: 10 } }, grid: { color: 'rgba(44,49,83,0.5)' } }, y: { ticks: { color: '#5c6084', font: { size: 10 } }, grid: { color: 'rgba(44,49,83,0.5)' } } }
+      }
+    });
+  }
+
+  function renderHourlyChart(points) {
+    const card = el('hourlyChartCard');
+    if (!points.length) { card.classList.add('empty'); return; }
+    card.classList.remove('empty');
+
+    const buckets = Array.from({ length: 24 }, () => ({ sum: 0, count: 0 }));
+    points.forEach((p) => {
+      const hour = new Date(p.t * 1000).getHours();
+      buckets[hour].sum += p.v;
+      buckets[hour].count += 1;
+    });
+    const hourlyAvg = buckets.map((b) => (b.count ? b.sum / b.count : null));
+    const labels = hourlyAvg.map((_, i) => String(i).padStart(2, '0') + ':00');
+
+    let peakHour = -1, peakVal = -Infinity;
+    hourlyAvg.forEach((v, i) => { if (v !== null && v > peakVal) { peakVal = v; peakHour = i; } });
+    const colors = hourlyAvg.map((v, i) => (i === peakHour ? '#e8a33d' : 'rgba(79,176,174,0.55)'));
+
+    el('peakHourText').innerHTML = peakHour >= 0
+      ? `Jam paling efektif: <b>${String(peakHour).padStart(2, '0')}:00–${String((peakHour + 1) % 24).padStart(2, '0')}:00</b> · rata-rata ${peakVal.toFixed(2)} V`
+      : '—';
+
+    if (hourlyChart) {
+      hourlyChart.data.labels = labels;
+      hourlyChart.data.datasets[0].data = hourlyAvg;
+      hourlyChart.data.datasets[0].backgroundColor = colors;
+      hourlyChart.update();
+      return;
+    }
+    const ctx = el('hourlyChart').getContext('2d');
+    hourlyChart = new Chart(ctx, {
+      type: 'bar',
+      data: { labels, datasets: [{ data: hourlyAvg, backgroundColor: colors, borderRadius: 4, maxBarThickness: 14 }] },
+      options: {
+        responsive: true, maintainAspectRatio: false, animation: { duration: 350 },
+        plugins: { legend: { display: false }, tooltip: { backgroundColor: '#1b1f33', borderColor: '#2c3153', borderWidth: 1, titleColor: '#f1efe9', bodyColor: '#f1efe9', padding: 10, displayColors: false, callbacks: { label: (c) => (c.parsed.y != null ? c.parsed.y.toFixed(2) + ' V' : 'Tidak ada data') } } },
+        scales: { x: { ticks: { color: '#5c6084', font: { size: 9 }, maxRotation: 0, autoSkip: true, maxTicksLimit: 12 }, grid: { display: false } }, y: { ticks: { color: '#5c6084', font: { size: 10 } }, grid: { color: 'rgba(44,49,83,0.5)' } } }
+      }
+    });
+  }
+
+  function loadVoltageHistory(hours) {
+    currentHours = hours;
+    const cutoffSec = Math.floor(Date.now() / 1000) - hours * 3600;
+    db.ref('/solar_tracker/voltage_log').orderByKey().limitToLast(2100).once('value', (snap) => {
+      const points = [];
+      snap.forEach((child) => {
+        const t = parseInt(child.key, 10);
+        const v = child.val();
+        if (t >= cutoffSec && typeof v === 'number') points.push({ t, v });
+      });
+      lastLoadedVoltagePoints = points;
+      renderChart(points);
+      renderHourlyChart(points);
+    });
+  }
+
+  document.querySelectorAll('.range-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.range-btn').forEach((b) => b.classList.remove('active'));
+      btn.classList.add('active');
+      loadVoltageHistory(parseInt(btn.dataset.hours, 10));
+    });
+  });
+
+  loadVoltageHistory(24);
+  db.ref('/solar_tracker/voltage_log').orderByKey().limitToLast(1).on('child_added', () => loadVoltageHistory(currentHours));
+
+  // ================= PWA: DAFTARKAN SERVICE WORKER =================
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js').catch((err) => console.warn('Service worker gagal didaftarkan:', err));
+    });
+  }
+
+  // ================= ARUS, DAYA & ENERGI =================
+  db.ref('/solar_tracker/current').on('value', (s) => {
+    const v = s.val();
+    el('currentVal').innerHTML = (v != null ? v.toFixed(2) : '—') + ' <small>A</small>';
+  });
+  db.ref('/solar_tracker/power_watt').on('value', (s) => {
+    const v = s.val();
+    el('powerWattVal').innerHTML = (v != null ? v.toFixed(1) : '—') + ' <small>W</small>';
+  });
+  db.ref('/solar_tracker/energy_today_wh').on('value', (s) => {
+    const v = s.val();
+    el('energyTodayVal').innerHTML = (v != null ? v.toFixed(1) : '—') + ' <small>Wh</small>';
+  });
+  db.ref('/solar_tracker/energy_total_wh').on('value', (s) => {
+    const v = s.val();
+    el('energyTotalVal').innerHTML = (v != null ? (v / 1000).toFixed(2) : '—') + ' <small>kWh</small>';
+  });
+
+  // ---------- Perbandingan dengan panel statis (kalau ada sensornya) ----------
+  let trackerEnergyToday = null, staticEnergyToday = null;
+  function updateComparison() {
+    if (trackerEnergyToday == null || staticEnergyToday == null) return;
+    el('comparisonCard').style.display = 'block';
+    if (staticEnergyToday <= 0.01) { el('comparisonVal').textContent = 'Menunggu data panel statis…'; return; }
+    const diffPct = ((trackerEnergyToday - staticEnergyToday) / staticEnergyToday) * 100;
+    const word = diffPct >= 0 ? 'lebih banyak' : 'lebih sedikit';
+    el('comparisonVal').textContent = `Tracker ${Math.abs(diffPct).toFixed(1)}% ${word} dari panel statis (${trackerEnergyToday.toFixed(1)} Wh vs ${staticEnergyToday.toFixed(1)} Wh)`;
+  }
+  db.ref('/solar_tracker/energy_today_wh').on('value', (s) => { trackerEnergyToday = s.val(); updateComparison(); });
+  db.ref('/solar_tracker/static_panel/energy_today_wh').on('value', (s) => { staticEnergyToday = s.val(); updateComparison(); });
+
+  // ---------- Grafik energi harian (7 hari) ----------
+  let dailyEnergyChart = null;
+  function loadDailyEnergy() {
+    db.ref('/solar_tracker/energy_daily_log').orderByKey().limitToLast(7).once('value', (snap) => {
+      const card = el('dailyEnergyCard');
+      const entries = [];
+      snap.forEach((child) => entries.push({ date: child.key, wh: child.val() }));
+      if (!entries.length) { card.classList.add('empty'); return; }
+      card.classList.remove('empty');
+
+      const labels = entries.map((e) => {
+        const [y, m, d] = e.date.split('-');
+        return d + '/' + m;
+      });
+      const values = entries.map((e) => e.wh);
+
+      if (dailyEnergyChart) {
+        dailyEnergyChart.data.labels = labels;
+        dailyEnergyChart.data.datasets[0].data = values;
+        dailyEnergyChart.update();
+        return;
+      }
+      const ctx = document.getElementById('dailyEnergyChart').getContext('2d');
+      dailyEnergyChart = new Chart(ctx, {
+        type: 'bar',
+        data: { labels, datasets: [{ data: values, backgroundColor: 'rgba(232,163,61,0.65)', borderRadius: 4, maxBarThickness: 26 }] },
+        options: {
+          responsive: true, maintainAspectRatio: false, animation: { duration: 350 },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: '#1b1f33', borderColor: '#2c3153', borderWidth: 1, titleColor: '#f1efe9', bodyColor: '#f1efe9',
+              padding: 10, displayColors: false, callbacks: { label: (ctx) => ctx.parsed.y.toFixed(1) + ' Wh' }
+            }
+          },
+          scales: {
+            x: { ticks: { color: '#5c6084', font: { size: 10 } }, grid: { display: false } },
+            y: { ticks: { color: '#5c6084', font: { size: 10 } }, grid: { color: 'rgba(44,49,83,0.5)' } }
+          }
+        }
+      });
+    });
+  }
+  loadDailyEnergy();
+  db.ref('/solar_tracker/energy_daily_log').limitToLast(1).on('child_added', loadDailyEnergy);
+
+  // ================= INDIKATOR PERANGKAT OFFLINE =================
+  let lastSeenEpoch = null;
+  db.ref('/solar_tracker/last_seen').on('value', (s) => { lastSeenEpoch = s.val(); });
+
+  function formatAgo(seconds) {
+    if (seconds < 60) return Math.round(seconds) + ' detik';
+    if (seconds < 3600) return Math.round(seconds / 60) + ' menit';
+    return Math.round(seconds / 3600) + ' jam';
+  }
+
+  function checkOffline() {
+    if (lastSeenEpoch == null) return;
+    const diff = Math.floor(Date.now() / 1000) - lastSeenEpoch;
+    const isOffline = diff > 120; // lebih dari 2 menit tanpa update dianggap offline
+    document.body.classList.toggle('device-offline', isOffline);
+    if (isOffline) el('lastSeenText').textContent = formatAgo(diff);
+  }
+  setInterval(checkOffline, 5000);
+  checkOffline();
+
+  // ================= EKSPOR CSV =================
+  el('exportCsvBtn').addEventListener('click', () => {
+    if (!lastLoadedVoltagePoints || !lastLoadedVoltagePoints.length) {
+      alert('Belum ada data riwayat untuk diekspor.');
+      return;
+    }
+    let csv = 'timestamp_epoch,tanggal_waktu,tegangan_volt\n';
+    lastLoadedVoltagePoints.forEach((p) => {
+      const iso = new Date(p.t * 1000).toISOString();
+      csv += `${p.t},${iso},${p.v.toFixed(3)}\n`;
+    });
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `riwayat-tegangan-${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
+
+  // ================= PENGATURAN & KALIBRASI =================
+  const cfgFields = {
+    cfgLightThreshold: '/solar_tracker/config/light_threshold',
+    cfgServoMin: '/solar_tracker/config/servo_min',
+    cfgServoMax: '/solar_tracker/config/servo_max',
+    cfgStandbyAz: '/solar_tracker/config/standby_azimuth',
+    cfgStandbyEl: '/solar_tracker/config/standby_elevasi',
+    cfgLowVoltage: '/solar_tracker/config/low_voltage_alert',
+    cfgParkHour: '/solar_tracker/config/auto_park_hour',
+    cfgWakeHour: '/solar_tracker/config/auto_wake_hour',
+  };
+
+  db.ref('/solar_tracker/config').once('value', (snap) => {
+    const cfg = snap.val() || {};
+    if (cfg.light_threshold != null) el('cfgLightThreshold').value = cfg.light_threshold;
+    if (cfg.servo_min != null) el('cfgServoMin').value = cfg.servo_min;
+    if (cfg.servo_max != null) el('cfgServoMax').value = cfg.servo_max;
+    if (cfg.standby_azimuth != null) el('cfgStandbyAz').value = cfg.standby_azimuth;
+    if (cfg.standby_elevasi != null) el('cfgStandbyEl').value = cfg.standby_elevasi;
+    if (cfg.low_voltage_alert != null) el('cfgLowVoltage').value = cfg.low_voltage_alert;
+    if (cfg.auto_park_hour != null) el('cfgParkHour').value = cfg.auto_park_hour;
+    if (cfg.auto_wake_hour != null) el('cfgWakeHour').value = cfg.auto_wake_hour;
+    setScheduleUI(cfg.auto_park_enabled === true);
+  });
+
+  let scheduleOn = false;
+  const scheduleSwitch = el('scheduleSwitch');
+  function setScheduleUI(isOn) {
+    scheduleOn = isOn;
+    scheduleSwitch.classList.toggle('on', isOn);
+  }
+  scheduleSwitch.addEventListener('click', () => setScheduleUI(!scheduleOn));
+
+  el('saveConfigBtn').addEventListener('click', () => {
+    const updates = {};
+    Object.keys(cfgFields).forEach((id) => {
+      const val = parseFloat(el(id).value);
+      if (!isNaN(val)) updates[cfgFields[id]] = val;
+    });
+    updates['/solar_tracker/config/auto_park_enabled'] = scheduleOn;
+
+    const writes = Object.keys(updates).map((path) => db.ref(path).set(updates[path]));
+    Promise.all(writes)
+      .then(() => {
+        el('saveStatus').textContent = 'Tersimpan ✓ — ESP32 akan membaca nilai baru dalam beberapa detik.';
+        setTimeout(() => { el('saveStatus').textContent = ''; }, 4000);
+      })
+      .catch((err) => {
+        el('saveStatus').textContent = 'Gagal menyimpan: ' + err.message;
+      });
+  });
+
+  // ================= NAVIGASI TAB BAWAH =================
+  const navButtons = Array.from(document.querySelectorAll('.nav-btn'));
+  const tabSections = navButtons.map((btn) => document.getElementById(btn.dataset.target));
+
+  navButtons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const target = document.getElementById(btn.dataset.target);
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+
+  const navObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        const idx = tabSections.indexOf(entry.target);
+        if (idx === -1) return;
+        navButtons.forEach((b) => b.classList.remove('active'));
+        navButtons[idx].classList.add('active');
+      });
+    },
+    { rootMargin: '-40% 0px -55% 0px', threshold: 0 }
+  );
+  tabSections.forEach((sec) => { if (sec) navObserver.observe(sec); });
+</script>
+
+</body>
+</html>
