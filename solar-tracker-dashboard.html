@@ -628,7 +628,6 @@
   <button class="nav-btn" data-target="tab-atur"><span class="nav-icon">⚙️</span><span>Atur</span></button>
 </nav>
 
-<!-- ======================= FIREBASE (classic, mengisi window.firebase) ======================= -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
@@ -636,12 +635,12 @@
 
 <!-- ======================= APLIKASI UTAMA ======================= -->
 <script>
-  // ============ ISI KONFIGURASI FIREBASE KAMU DI SINI ============
+  // ============ JANLUP ISI INI!!! ============
   const firebaseConfig = {
-    apiKey: "ISI_API_KEY_FIREBASE",
-    authDomain: "NAMA-PROJECT.firebaseapp.com",
-    databaseURL: "https://NAMA-PROJECT-default-rtdb.asia-southeast1.firebasedatabase.app/",
-    projectId: "NAMA-PROJECT",
+    apiKey: "JANLUP ISI",
+    authDomain: "INI JUGA!!!.firebaseapp.com",
+    databaseURL: "https://INI JUGA.asia-southeast1.firebasedatabase.app/",
+    projectId: "PLS JANLUP ISI!!!!!",
   };
   const LOGIN_EMAIL = "email_akun_firebase@example.com";
   const LOGIN_PASSWORD = "password_akun_firebase";
@@ -833,10 +832,10 @@
       // langsung terapkan posisi terakhirnya sekarang.
       setTargetAngles(lastAz, lastEl);
     } catch (err) {
-      console.warn('Visualisasi 3D tidak dapat dimuat, dashboard tetap berjalan tanpa tampilan 3D:', err);
+      console.warn('Visualisasi tidak dapat dimuat:', err);
       const canvasBox = el('panel3dCanvas');
       if (canvasBox) {
-        canvasBox.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;padding:20px;text-align:center;font-size:0.78rem;color:var(--text-faint);line-height:1.5;">Visualisasi 3D tidak dapat dimuat (cek koneksi internet atau buka lewat Live Server, bukan double-click file).<br>Data &amp; kontrol lain tetap berjalan normal.</div>';
+        canvasBox.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;padding:20px;text-align:center;font-size:0.78rem;color:var(--text-faint);line-height:1.5;">Visualisasi 3D tidak dapat dimuat pls cek koneksi internet :).</div>';
       }
     }
   })();
