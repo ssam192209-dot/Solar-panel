@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<title>Solar Tracker — Panel Surya Pintar</title>
+<title>Solar Tracker — XII MIA 1</title>
 <link rel="manifest" href="manifest.json" />
 <meta name="theme-color" content="#151109" />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%94%86%3C/text%3E%3C/svg%3E" />
@@ -1161,7 +1161,7 @@
     <button class="save-btn" id="saveConfigBtn">Save settings</button>
     <div class="save-status" id="saveStatus"></div>
 
-    <div class="telegram-note">💬 Notifikasi Telegram (isi <code>TELEGRAM_BOT_TOKEN</code> &amp; set <code>TELEGRAM_ENABLED</code> ke <code>true</code>), bukan dari halaman ini.</div>
+    <div class="telegram-note">💬 Notifikasi Telegram (isi <code>TELEGRAM_BOT_TOKEN</code> &amp; set <code>TELEGRAM_ENABLED</code> ke <code>true</code>).</div>
   </div>
 
   </section>
@@ -1425,7 +1425,7 @@
       console.warn('Visualisasi 3D tidak dapat dimuat:', err);
       const canvasBox = el('panel3dCanvas');
       if (canvasBox) {
-        canvasBox.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;padding:20px;text-align:center;font-size:0.78rem;color:var(--text-faint);line-height:1.5;">Visualisasi 3D tidak dapat dimuat (cek koneksi internet atau buka lewat Live Server, bukan double-click file).<br>Data &amp; kontrol lain tetap berjalan normal.</div>';
+        canvasBox.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;padding:20px;text-align:center;font-size:0.78rem;color:var(--text-faint);line-height:1.5;">Visualisasi 3D tidak dapat dimuat (cek koneksi internet).</div>';
       }
     }
   })();
