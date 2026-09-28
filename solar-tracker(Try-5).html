@@ -155,6 +155,22 @@
     max-width:220px;
   }
 
+  /* ====== BARU: subtitle rata kiri ====== */
+  .header-left {
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+  }
+  .header-subtitle {
+    font-size: 0.74rem;
+    color: var(--text-muted);
+    margin: 4px 0 0;
+    font-family: 'IBM Plex Sans', sans-serif;
+    line-height: 1.35;
+    max-width: 240px;
+    letter-spacing: 0.01em;
+  }
+
   .header-right {
     display: flex;
     align-items: center;
@@ -342,8 +358,32 @@
   .stat-card .v.teal{ color:var(--teal); }
   .stat-card .v small{ font-size:0.68rem; color:var(--text-muted); font-weight:400; margin-left:2px; }
 
-  /* ---------- Section titles ---------- */
-  .section-title{ font-size:0.95rem; font-weight:600; margin:22px 0 12px 2px; color:var(--text); }
+  /* ---------- Section titles (RATA KIRI) ---------- */
+  .section-title{
+    font-size:0.95rem;
+    font-weight:600;
+    margin:22px 0 12px 2px;
+    color:var(--text);
+    display:flex;
+    align-items:center;
+    gap:6px;
+    text-align:left;
+  }
+
+  /* ====== BARU: deskripsi di bawah section title ====== */
+  .section-block {
+    text-align: left;
+    margin: 22px 0 12px 2px;
+  }
+  .section-block .section-title { margin: 0 0 4px; }
+  .section-desc {
+    font-size: 0.74rem;
+    color: var(--text-faint);
+    line-height: 1.45;
+    margin: 0;
+    max-width: 480px;
+    text-align: left;
+  }
 
   /* ---------- Chart card ---------- */
   .chart-card{ padding:16px 16px 6px; margin-bottom:14px; }
@@ -361,7 +401,16 @@
   .range-btn.active{ background:var(--surface-2); color:var(--text); }
 
   .chart-wrap{ position:relative; width:100%; }
-  .chart-empty{ display:none; text-align:center; font-size:0.78rem; color:var(--text-faint); padding:30px 10px 34px; }
+
+  /* ====== BARU: chart-empty rata kiri ====== */
+  .chart-empty{
+    display:none;
+    text-align:left;
+    font-size:0.78rem;
+    color:var(--text-faint);
+    padding:24px 4px 28px;
+    line-height:1.5;
+  }
   .chart-card.empty .chart-wrap{ display:none; }
   .chart-card.empty .chart-empty{ display:block; }
 
@@ -435,7 +484,18 @@
   input[type="range"]::-webkit-slider-runnable-track{ height:4px; border-radius:2px; }
   input[type="range"]:disabled::-webkit-slider-thumb{ background:var(--text-faint); box-shadow:none; }
 
-  footer{ text-align:center; font-size:0.72rem; color:var(--text-faint); margin-top:22px; padding-bottom:8px; }
+  /* ====== BARU: footer rata kiri, 2 baris ====== */
+  footer{
+    text-align:left;
+    font-size:0.72rem;
+    color:var(--text-faint);
+    margin-top:22px;
+    padding-bottom:8px;
+    line-height:1.5;
+    padding-left:2px;
+  }
+  footer .footer-line { color:var(--text-muted); margin-bottom:4px; display:block; }
+  footer .footer-note { color:var(--text-faint); font-size:0.68rem; display:block; letter-spacing:0.01em; }
 
   @media (prefers-reduced-motion: reduce){
     .toggle-thumb, .manual-controls{ transition:none !important; }
@@ -540,7 +600,6 @@
   .save-btn:active, .export-btn:active, .nav-btn:active, .theme-toggle:active{ filter:brightness(0.94); }
   .save-btn, .export-btn, .toggle-pill button, .range-btn, .power-switch, .theme-toggle{ -webkit-tap-highlight-color:transparent; }
   input[type="range"]::-webkit-slider-thumb{ width:22px; height:22px; margin-top:-9px; }
-  .section-title{ display:flex; align-items:center; gap:6px; }
 
   /* Ikon tema */
   .theme-toggle .icon-sun,
@@ -567,6 +626,7 @@
       padding: calc(16px + env(safe-area-inset-top, 0px)) 32px 16px;
     }
     header h1 { font-size: 1.7rem; max-width: none; }
+    .header-subtitle { font-size: 0.8rem; max-width: none; }
 
     .bottom-nav { display: none; }
     body { padding-bottom: 40px; }
@@ -641,6 +701,7 @@
       align-items: start;
     }
     #tab-riwayat .section-title,
+    #tab-riwayat .section-block,
     #tab-riwayat .stat-row { grid-column: 1 / -1; }
     #tab-riwayat .stat-row { grid-template-columns: 1fr 1fr; max-width: none; }
     #tab-riwayat #dailyEnergyCard,
@@ -654,6 +715,7 @@
     /* ---- Sensor: grid dipusatkan ---- */
     #tab-sensor { display: block; }
     #tab-sensor .section-title { margin-top: 0; }
+    #tab-sensor .section-block { margin-top: 0; }
     #tab-sensor .sensor-grid {
       max-width: 560px;
       margin: 0 auto;
@@ -669,6 +731,7 @@
     }
     #tab-atur .mode-block { grid-column: 1 / 2; margin-bottom: 0; }
     #tab-atur .section-title { grid-column: 1 / -1; margin: 0; }
+    #tab-atur .section-block { grid-column: 1 / -1; margin: 0; }
     #tab-atur .settings-card {
       grid-column: 1 / -1;
       margin-bottom: 0;
@@ -695,7 +758,9 @@
     }
 
     /* Tipografi lebih lega */
-    .section-title { font-size: 1.05rem; margin: 26px 0 14px 2px; }
+    .section-title { font-size: 1.05rem; margin: 26px 0 4px 2px; }
+    .section-block { margin: 26px 0 14px 2px; }
+    .section-block .section-title { margin: 0 0 4px; }
     .stat-card { padding: 18px 20px; }
     .stat-card .v { font-size: 1.5rem; }
     .power-card { padding: 20px 22px; }
@@ -754,6 +819,7 @@
       padding: calc(16px + env(safe-area-inset-top, 0px)) 28px 16px;
     }
     header h1 { font-size: 1.7rem; max-width: none; }
+    .header-subtitle { font-size: 0.8rem; max-width: none; }
 
     .bottom-nav { display: none; }
     body { padding-bottom: 40px; }
@@ -885,6 +951,7 @@
       backdrop-filter: none;
     }
     header h1 { font-size: 1.2rem; }
+    .header-subtitle { font-size: 0.68rem; }
     html { scroll-padding-top: 12px; }
     .tab-section { scroll-margin-top: 12px; animation: none; }
 
@@ -893,6 +960,7 @@
     #tab-beranda .panel3d-card #panel3dCanvas { height: clamp(180px, 62vh, 300px); }
     .chart-wrap { height: 170px; }
     .section-title { margin: 14px 0 10px 2px; }
+    .section-block { margin: 14px 0 10px 2px; }
     .stat-card { padding: 12px 14px; }
     .stat-card .v { font-size: 1.2rem; }
     #tab-beranda .stat-card .v { font-size: 1.2rem; }
@@ -905,7 +973,10 @@
 <div class="wrap">
 
   <header>
-    <h1>Solar Tracker</h1>
+    <div class="header-left">
+      <h1>Solar Tracker</h1>
+      <p class="header-subtitle">XII MIA 1, Kelompok 2</p>
+    </div>
     <div class="header-right">
       <button class="theme-toggle" id="themeToggle" aria-label="Ganti tema" title="Ganti tema">
         <span class="icon-sun">☀️</span>
@@ -926,7 +997,7 @@
   <!-- BANNER OFFLINE -->
   <div class="offline-banner" id="offlineBanner">
     <span>⚠️</span>
-    <div>unmonitored device — latest data<b id="lastSeenText">—</b> ago. Check the Wi-Fi connection/power ESP32.</div>
+    <div>Perangkat tidak terhubung — data terakhir <b id="lastSeenText">—</b> yang lalu. Periksa koneksi Wi-Fi atau power ESP32.</div>
   </div>
 
   <!-- POWER TOGGLE -->
@@ -964,15 +1035,15 @@
       <div class="v teal" id="voltVal">— <small>V</small></div>
     </div>
     <div class="stat-card glass-card">
-      <div class="k">panel voltage</div>
+      <div class="k">Arus panel</div>
       <div class="v teal" id="currentVal">— <small>A</small></div>
     </div>
     <div class="stat-card glass-card">
-      <div class="k">current power</div>
+      <div class="k">Daya saat ini</div>
       <div class="v" id="powerWattVal">— <small>W</small></div>
     </div>
     <div class="stat-card glass-card">
-      <div class="k">active mode</div>
+      <div class="k">Mode aktif</div>
       <div class="v" id="modeVal">—</div>
     </div>
   </div>
@@ -981,73 +1052,85 @@
 
   <!-- ENERGI -->
   <section id="tab-riwayat" class="tab-section">
-  <div class="section-title">energy is produced</div>
+  <div class="section-block">
+    <div class="section-title">Energi yang dihasilkan</div>
+    <p class="section-desc">Total energi listrik yang dihasilkan panel surya — hari ini dan sepanjang waktu</p>
+  </div>
   <div class="stat-row fadeable" style="grid-template-columns:1fr 1fr;">
     <div class="stat-card glass-card">
-      <div class="k">today</div>
+      <div class="k">Hari ini</div>
       <div class="v" id="energyTodayVal">— <small>Wh</small></div>
     </div>
     <div class="stat-card glass-card">
-      <div class="k">all time</div>
+      <div class="k">Sepanjang waktu</div>
       <div class="v" id="energyTotalVal">— <small>kWh</small></div>
     </div>
   </div>
 
   <div class="chart-card glass-card fadeable" id="dailyEnergyCard">
     <div class="chart-head">
-      <div><span class="cs-k">Daily energy</span></div>
+      <div><span class="cs-k">Energi harian (7 hari terakhir)</span></div>
     </div>
     <div class="chart-wrap"><canvas id="dailyEnergyChart" height="150"></canvas></div>
-    <div class="chart-empty">There are no daily records yet.</div>
+    <div class="chart-empty">Belum ada catatan energi harian — data akan muncul setelah ESP32 mulai mengirim.</div>
   </div>
 
   <div class="stat-card glass-card fadeable" id="comparisonCard" style="display:none; margin-bottom:16px;">
-    <div class="k">compared to static panels (today)</div>
+    <div class="k">Dibanding panel statis (hari ini)</div>
     <div class="v" id="comparisonVal">—</div>
   </div>
 
   <!-- RIWAYAT TEGANGAN -->
-  <div class="section-title">Voltage History</div>
+  <div class="section-block">
+    <div class="section-title">Riwayat tegangan</div>
+    <p class="section-desc">Grafik perubahan tegangan panel dari waktu ke waktu</p>
+  </div>
   <div class="chart-card glass-card fadeable" id="voltageChartCard">
     <div class="chart-head">
       <div class="chart-stats">
-        <div><span class="cs-k">Now</span><span class="cs-v" id="chNow">— V</span></div>
-        <div><span class="cs-k">Average</span><span class="cs-v" id="chAvg">— V</span></div>
-        <div><span class="cs-k">Peak</span><span class="cs-v" id="chMax">— V</span></div>
+        <div><span class="cs-k">Sekarang</span><span class="cs-v" id="chNow">— V</span></div>
+        <div><span class="cs-k">Rata-rata</span><span class="cs-v" id="chAvg">— V</span></div>
+        <div><span class="cs-k">Puncak</span><span class="cs-v" id="chMax">— V</span></div>
       </div>
       <div class="range-pill">
-        <button class="range-btn active" data-hours="24">24 hours</button>
-        <button class="range-btn" data-hours="168">7 days</button>
+        <button class="range-btn active" data-hours="24">24 jam</button>
+        <button class="range-btn" data-hours="168">7 hari</button>
       </div>
     </div>
     <div class="chart-wrap"><canvas id="voltageChart" height="150"></canvas></div>
-    <div class="chart-empty">No data available — Waiting for data from ESP32.</div>
-    <button class="export-btn" id="exportCsvBtn">⬇ Export History</button>
+    <div class="chart-empty">Belum ada data — menunggu kiriman dari ESP32.</div>
+    <button class="export-btn" id="exportCsvBtn">⬇ Export Riwayat (CSV)</button>
   </div>
 
   <!-- JAM PALING EFEKTIF -->
-  <div class="section-title">Most Effective Hours</div>
+  <div class="section-block">
+    <div class="section-title">Jam paling efektif</div>
+    <p class="section-desc">Rata-rata tegangan per jam — untuk mengetahui kapan panel paling optimal</p>
+  </div>
   <div class="chart-card glass-card fadeable" id="hourlyChartCard">
     <div class="chart-head">
       <div>
-        <span class="cs-k">average hourly voltage</span>
+        <span class="cs-k">Rata-rata tegangan per jam</span>
         <div class="peak-summary" id="peakHourText">—</div>
       </div>
     </div>
     <div class="chart-wrap"><canvas id="hourlyChart" height="150"></canvas></div>
-    <div class="chart-empty">No data available — Waiting for data from ESP32.</div>
+    <div class="chart-empty">Belum ada data — menunggu kiriman dari ESP32.</div>
   </div>
 
   </section>
 
   <!-- SENSOR GRID -->
   <section id="tab-sensor" class="tab-section">
-  <div class="section-title">Light Sensors (LDR)</div>
+  <div class="section-block">
+    <div class="section-title">Sensor cahaya (LDR)</div>
+    <p class="section-desc">Empat sensor di setiap sudut panel — mendeteksi arah datangnya cahaya matahari</p>
+  </div>
   <div class="sensor-grid fadeable">
-    <div class="sensor-cell"><span class="pos">Top Left</span><div class="bulb" id="bulbTL"></div><div class="val" id="valTL">—</div></div>
-    <div class="sensor-cell"><span class="pos">Top Right</span><div class="bulb" id="bulbTR"></div><div class="val" id="valTR">—</div></div>
-    <div class="sensor-cell"><span class="pos">Bottom Left</span><div class="bulb" id="bulbBL"></div><div class="val" id="valBL">—</div></div>
-    <div class="sensor-cell"><span class="pos">Bottom Right</span><div class="bulb" id="bulbBR"></div><div class="val" id="valBR">—</div></div>
+    <div class="sensor-cell"><span class="pos">Kiri Atas</span><div class="bulb" id="bulbTL"></div><div class="val" id="valTL">—</div></div>
+    <div class="sensor-cell"><span class="pos">Kanan Atas</span><div class="bulb" id="bulbTR"></div><div class="val" id="valTR">—</div></div>
+    <div class="sensor-cell"><span class="pos">Kiri Bawah</span><div class="bulb" id="bulbBL"></div><div class="val" id="valBL">—</div></div>
+    <div class="sensor-cell"><span class="pos">Kanan Bawah</span><div class="bulb" id="bulbBR"></div><div class="val" id="valBR">—</div></div>
   </div>
 
   </section>
@@ -1055,7 +1138,7 @@
   <!-- MODE + MANUAL CONTROL -->
   <section id="tab-atur" class="tab-section">
   <div class="mode-block glass-card fadeable">
-    <div class="mode-head"><h3>tracking control</h3></div>
+    <div class="mode-head"><h3>Kontrol tracking</h3></div>
 
     <div class="toggle-pill">
       <div class="toggle-thumb" id="toggleThumb"></div>
@@ -1069,54 +1152,60 @@
         <input type="range" id="azSlider" min="10" max="170" value="90" disabled />
       </div>
       <div class="slider-row">
-        <div class="lbl"><span>Elevation</span><b id="elSliderLabel">90°</b></div>
+        <div class="lbl"><span>Elevasi</span><b id="elSliderLabel">90°</b></div>
         <input type="range" id="elSlider" min="10" max="170" value="90" disabled />
       </div>
     </div>
   </div>
 
   <!-- PENGATURAN & KALIBRASI -->
-  <div class="section-title">Pengaturan & kalibrasi</div>
+  <div class="section-block">
+    <div class="section-title">Pengaturan & kalibrasi</div>
+    <p class="section-desc">Nilai ini dibaca langsung oleh ESP32 dari Firebase — perubahan akan diterapkan otomatis</p>
+  </div>
   <div class="settings-card glass-card fadeable">
-    <div class="settings-desc">Nilai ini dibaca langsung oleh ESP32 dari Firebase</div>
+    <div class="settings-desc">Semua perubahan akan disimpan ke Firebase dan dibaca oleh ESP32 dalam beberapa detik.</div>
 
     <div class="form-row">
-      <label for="cfgLightThreshold">Light threshold (tracking tolerance)</label>
+      <label for="cfgLightThreshold">Light threshold (toleransi tracking)</label>
       <input type="number" id="cfgLightThreshold" min="1" max="500" />
     </div>
     <div class="form-row-2">
-      <div class="form-row"><label for="cfgServoMin">Servo minimum limit (°)</label><input type="number" id="cfgServoMin" min="0" max="180" /></div>
-      <div class="form-row"><label for="cfgServoMax">Servo maximum limit (°)</label><input type="number" id="cfgServoMax" min="0" max="180" /></div>
+      <div class="form-row"><label for="cfgServoMin">Batas minimum servo (°)</label><input type="number" id="cfgServoMin" min="0" max="180" /></div>
+      <div class="form-row"><label for="cfgServoMax">Batas maksimum servo (°)</label><input type="number" id="cfgServoMax" min="0" max="180" /></div>
     </div>
     <div class="form-row-2">
-      <div class="form-row"><label for="cfgStandbyAz">Standby azimuth (°)</label><input type="number" id="cfgStandbyAz" min="0" max="180" /></div>
-      <div class="form-row"><label for="cfgStandbyEl">Standby elevation (°)</label><input type="number" id="cfgStandbyEl" min="0" max="180" /></div>
+      <div class="form-row"><label for="cfgStandbyAz">Azimuth standby (°)</label><input type="number" id="cfgStandbyAz" min="0" max="180" /></div>
+      <div class="form-row"><label for="cfgStandbyEl">Elevasi standby (°)</label><input type="number" id="cfgStandbyEl" min="0" max="180" /></div>
     </div>
     <div class="form-row">
-      <label for="cfgLowVoltage">Low-voltage alert threshold (V)</label>
+      <label for="cfgLowVoltage">Ambang peringatan tegangan rendah (V)</label>
       <input type="number" id="cfgLowVoltage" min="0" max="50" step="0.1" />
     </div>
 
     <div class="settings-divider"></div>
 
     <div class="schedule-head">
-      <label>Automatic schedule</label>
+      <label>Jadwal otomatis</label>
       <div class="power-switch" id="scheduleSwitch"><div class="knob"></div></div>
     </div>
     <div class="form-row-2">
-      <div class="form-row"><label for="cfgParkHour">Start Shutdown</label><input type="number" id="cfgParkHour" min="0" max="23" /></div>
-      <div class="form-row"><label for="cfgWakeHour">Restart</label><input type="number" id="cfgWakeHour" min="0" max="23" /></div>
+      <div class="form-row"><label for="cfgParkHour">Mulai shutdown</label><input type="number" id="cfgParkHour" min="0" max="23" /></div>
+      <div class="form-row"><label for="cfgWakeHour">Mulai aktif kembali</label><input type="number" id="cfgWakeHour" min="0" max="23" /></div>
     </div>
 
-    <button class="save-btn" id="saveConfigBtn">Save settings</button>
+    <button class="save-btn" id="saveConfigBtn">Simpan pengaturan</button>
     <div class="save-status" id="saveStatus"></div>
 
-    <div class="telegram-note">💬 Notifikasi Telegram (isi <code>TELEGRAM_BOT_TOKEN</code> &amp; set <code>TELEGRAM_ENABLED</code> ke <code>true</code>).</div>
+    <div class="telegram-note">💬 Notifikasi Telegram (isi <code>TELEGRAM_BOT_TOKEN</code> &amp; set <code>TELEGRAM_ENABLED</code> ke <code>true</code> di ESP32).</div>
   </div>
 
   </section>
 
-  <footer id="lastUpdated">Waiting for data...</footer>
+  <footer id="lastUpdated">
+    <span class="footer-line">Menunggu data...</span>
+    <span class="footer-note">XII MIA 1 · Solar Tracker Project · 2026</span>
+  </footer>
 
 </div>
 
@@ -1218,7 +1307,9 @@
   let lastAz = 90, lastEl = 90, manualMode = false;
 
   function touchUpdated() {
-    el('lastUpdated').textContent = 'Update terakhir ' + new Date().toLocaleTimeString('id-ID');
+    el('lastUpdated').innerHTML =
+      '<span class="footer-line">Update terakhir ' + new Date().toLocaleTimeString('id-ID') + '</span>' +
+      '<span class="footer-note">XII MIA 1 · Solar Tracker Project · 2025</span>';
   }
 
   function computeHeadingWord(az) {
@@ -1380,7 +1471,7 @@
       console.warn('Visualisasi 3D tidak dapat dimuat:', err);
       const canvasBox = el('panel3dCanvas');
       if (canvasBox) {
-        canvasBox.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;padding:20px;text-align:center;font-size:0.78rem;color:var(--text-faint);line-height:1.5;">Visualisasi 3D tidak dapat dimuat (cek koneksi internet).</div>';
+        canvasBox.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;padding:20px;text-align:left;font-size:0.78rem;color:var(--text-faint);line-height:1.5;">Visualisasi 3D tidak dapat dimuat (cek koneksi internet).</div>';
       }
     }
   })();
