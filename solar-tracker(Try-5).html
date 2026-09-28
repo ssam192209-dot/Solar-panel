@@ -553,19 +553,19 @@
   .desktop-nav { display: none; }
 
   /* ============================================================
-     ============ LANDSCAPE: HP/TABLET/DESKTOP (≥600px) =========
+     ============ LANDSCAPE: HP / TABLET / DESKTOP ==============
      ============================================================ */
   @media (min-width: 600px) and (orientation: landscape) {
+    body { padding-right: env(safe-area-inset-right, 0px); }
+
     .wrap {
       max-width: 960px;
       padding: calc(20px + env(safe-area-inset-top, 0px)) 32px 0;
     }
-
     header {
       margin: 0 -32px 24px;
       padding: calc(16px + env(safe-area-inset-top, 0px)) 32px 16px;
     }
-
     header h1 { font-size: 1.7rem; max-width: none; }
 
     .bottom-nav { display: none; }
@@ -593,14 +593,17 @@
       font-size: 0.82rem;
       border-radius: 999px;
       color: var(--text-muted);
-      transition: color .2s ease, background .2s ease, transform .15s ease;
     }
     .desktop-nav .nav-btn .nav-icon { font-size: 1rem; filter: grayscale(1) opacity(0.55); }
     .desktop-nav .nav-btn.active { color: var(--bg-deep); background: var(--gold); }
     .desktop-nav .nav-btn.active .nav-icon { filter: none; }
     .desktop-nav .nav-btn:hover:not(.active) { color: var(--text); background: var(--surface-2); }
 
-    /* Beranda */
+    /* Chart tinggi konsisten via wrapper */
+    .chart-wrap { height: 220px; }
+    .chart-wrap canvas { height: 100% !important; }
+
+    /* ---- Beranda ---- */
     #tab-beranda {
       display: grid;
       grid-template-columns: 1.15fr 1fr;
@@ -610,19 +613,27 @@
     #tab-beranda .power-card { grid-column: 1 / -1; margin-bottom: 0; }
     #tab-beranda .panel3d-card {
       grid-column: 1 / 2;
-      grid-row: 2 / 4;
+      grid-row: 2;
       margin-bottom: 0;
       height: 100%;
     }
     #tab-beranda .panel3d-card #panel3dCanvas { height: 340px; }
     #tab-beranda .stat-row {
       grid-column: 2 / 3;
-      grid-row: 2 / 3;
+      grid-row: 2;
       grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
       margin-bottom: 0;
+      align-self: stretch;
     }
+    #tab-beranda .stat-card {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    #tab-beranda .stat-card .v { font-size: 1.5rem; }
 
-    /* Riwayat */
+    /* ---- Riwayat: full width ---- */
     #tab-riwayat {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -631,29 +642,25 @@
     }
     #tab-riwayat .section-title,
     #tab-riwayat .stat-row { grid-column: 1 / -1; }
-    #tab-riwayat .stat-row { grid-template-columns: 1fr 1fr; max-width: 480px; }
+    #tab-riwayat .stat-row { grid-template-columns: 1fr 1fr; max-width: none; }
     #tab-riwayat #dailyEnergyCard,
     #tab-riwayat #voltageChartCard,
     #tab-riwayat #hourlyChartCard,
-    #tab-riwayat #comparisonCard { margin-bottom: 0; }
-    #tab-riwayat #voltageChartCard { grid-column: 1 / -1; }
-    #tab-riwayat #hourlyChartCard { grid-column: 1 / -1; }
-
-    /* Sensor */
-    #tab-sensor {
-      display: grid;
-      grid-template-columns: 1.1fr 1fr;
-      gap: 18px;
-      align-items: start;
-    }
-    #tab-sensor .section-title { grid-column: 1 / -1; margin-top: 0; }
-    #tab-sensor .sensor-grid {
+    #tab-riwayat #comparisonCard {
+      grid-column: 1 / -1;
       margin-bottom: 0;
-      max-width: 480px;
-      aspect-ratio: 1.15 / 1;
     }
 
-    /* Atur */
+    /* ---- Sensor: grid dipusatkan ---- */
+    #tab-sensor { display: block; }
+    #tab-sensor .section-title { margin-top: 0; }
+    #tab-sensor .sensor-grid {
+      max-width: 560px;
+      margin: 0 auto;
+      aspect-ratio: 1.6 / 1;
+    }
+
+    /* ---- Atur: mode kiri, settings kanan ---- */
     #tab-atur {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -661,13 +668,34 @@
       align-items: start;
     }
     #tab-atur .mode-block { grid-column: 1 / 2; margin-bottom: 0; }
-    #tab-atur .section-title { grid-column: 1 / -1; margin-top: 0; }
-    #tab-atur .settings-card { grid-column: 1 / -1; margin-bottom: 0; }
-    #tab-atur .settings-card .form-row-2 { gap: 18px; }
+    #tab-atur .section-title { grid-column: 1 / -1; margin: 0; }
+    #tab-atur .settings-card {
+      grid-column: 1 / -1;
+      margin-bottom: 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      column-gap: 28px;
+      align-items: start;
+    }
+    #tab-atur .settings-card > .settings-desc,
+    #tab-atur .settings-card > .settings-divider,
+    #tab-atur .settings-card > .save-btn,
+    #tab-atur .settings-card > .save-status,
+    #tab-atur .settings-card > .telegram-note {
+      grid-column: 1 / -1;
+    }
+    #tab-atur .settings-card .form-row:not(.form-row-2 .form-row) {
+      grid-column: 1 / -1;
+    }
+    #tab-atur .settings-card .form-row-2 {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
 
+    /* Tipografi lebih lega */
     .section-title { font-size: 1.05rem; margin: 26px 0 14px 2px; }
-    .chart-wrap canvas { height: 220px !important; }
-
     .stat-card { padding: 18px 20px; }
     .stat-card .v { font-size: 1.5rem; }
     .power-card { padding: 20px 22px; }
@@ -703,22 +731,18 @@
 
     #tab-beranda { grid-template-columns: 1.3fr 1fr; gap: 22px; }
     #tab-beranda .panel3d-card #panel3dCanvas { height: 400px; }
-    #tab-riwayat { gap: 22px; }
-    #tab-atur { grid-template-columns: 1fr 1.15fr; gap: 22px; }
-    #tab-atur .settings-card .form-row-2 {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 18px;
-    }
-    #tab-atur .settings-card .form-row-2 .form-row { margin-bottom: 0; }
+    #tab-beranda .stat-card .v { font-size: 1.8rem; }
 
-    .chart-wrap canvas { height: 260px !important; }
+    .chart-wrap { height: 280px; }
     .stat-card .v { font-size: 1.65rem; }
+  }
+
+  @media (min-width: 1600px) and (orientation: landscape) {
+    .wrap { max-width: 1320px; }
   }
 
   /* ============================================================
      ====== PORTRAIT: TABLET/DESKTOP VERTIKAL (≥820px) =========
-     ====== Layout 1 kolom lega, desktop nav tetap muncul =======
      ============================================================ */
   @media (min-width: 820px) and (orientation: portrait) {
     .wrap {
@@ -745,7 +769,6 @@
       border-radius: 999px;
       width: fit-content;
       box-shadow: 0 4px 12px -6px var(--shadow-color);
-      transition: background .4s ease, border-color .4s ease;
     }
     .desktop-nav .nav-btn {
       flex: none;
@@ -760,7 +783,6 @@
     .desktop-nav .nav-btn .nav-icon { font-size: 1rem; filter: grayscale(1) opacity(0.55); }
     .desktop-nav .nav-btn.active { color: var(--bg-deep); background: var(--gold); }
     .desktop-nav .nav-btn.active .nav-icon { filter: none; }
-    .desktop-nav .nav-btn:hover:not(.active) { color: var(--text); background: var(--surface-2); }
 
     /* Tetap satu kolom */
     #tab-beranda,
@@ -787,7 +809,8 @@
     .chart-card { padding: 20px 22px 14px; }
     .settings-card { padding: 22px 24px; }
     .mode-block { padding: 22px 24px; }
-    .chart-wrap canvas { height: 240px !important; }
+    .chart-wrap { height: 240px; }
+    .chart-wrap canvas { height: 100% !important; }
     .sensor-cell .val { font-size: 1.15rem; }
     .sensor-cell .bulb { width: 13px; height: 13px; }
     footer { margin-top: 32px; font-size: 0.78rem; }
@@ -799,10 +822,6 @@
     .status { font-size: 0.82rem; padding: 8px 14px 8px 11px; }
   }
 
-  /* ============================================================
-     ====== PORTRAIT SANGAT BESAR (≥1200px portrait) ============
-     ====== (monitor portrait 4K, dsb) ==========================
-     ============================================================ */
   @media (min-width: 1200px) and (orientation: portrait) {
     .wrap {
       max-width: 860px;
@@ -817,9 +836,9 @@
     header h1 { font-size: 1.85rem; }
 
     #tab-beranda .panel3d-card #panel3dCanvas { height: 420px; }
-    .chart-wrap canvas { height: 280px !important; }
+    .chart-wrap { height: 280px; }
     .stat-card .v { font-size: 1.65rem; }
-    .sensor-grid { max-width: 640px; }
+    #tab-sensor .sensor-grid { max-width: 640px; }
   }
 
   /* Scrollbar */
@@ -833,76 +852,8 @@
   ::-webkit-scrollbar-thumb:hover { background: var(--text-faint); }
 
   /* ============================================================
-     ============ PERBAIKAN LANDSCAPE (tambahan) ================
+     ====== HP LANDSCAPE (layar pendek): nav jadi rail kiri =====
      ============================================================ */
-  @media (min-width: 600px) and (orientation: landscape) {
-    body { padding-right: env(safe-area-inset-right, 0px); }
-
-    /* Tinggi grafik ditentukan wrapper, bukan canvas */
-    .chart-wrap { height: 220px; }
-    .chart-wrap canvas { height: 100% !important; }
-
-    /* Sensor: grid dipusatkan, tidak ada kolom kosong */
-    #tab-sensor .sensor-grid {
-      grid-column: 1 / -1;
-      width: 100%;
-      max-width: 520px;
-      margin: 0 auto;
-      aspect-ratio: 1.6 / 1;
-    }
-
-    /* Atur: kontrol di kiri, pengaturan di kanan */
-    #tab-atur .mode-block { grid-column: 1 / 2; grid-row: 1 / 3; }
-    #tab-atur .section-title { grid-column: 2 / 3; grid-row: 1; margin: 0; }
-    #tab-atur .settings-card { grid-column: 2 / 3; grid-row: 2; }
-    #tab-atur .settings-card .form-row-2 { grid-template-columns: 1fr 1fr; }
-  }
-
-  /* ===== PERBAIKAN LAYOUT LAPTOP / DESKTOP ===== */
-  @media (min-width: 600px) and (orientation: landscape) {
-    /* Beranda: 3D di kiri, kartu statistik di kanan setinggi kartu 3D */
-    #tab-beranda .panel3d-card { grid-row: 2; height: auto; }
-    #tab-beranda .stat-row { grid-row: 2; align-self: stretch; grid-template-rows: 1fr 1fr; }
-    #tab-beranda .stat-card { display: flex; flex-direction: column; justify-content: center; }
-    #tab-beranda .stat-card .v { font-size: 1.7rem; }
-
-    /* Riwayat: semua blok selebar penuh, tidak ada kolom kosong */
-    #tab-riwayat .stat-row { max-width: none; }
-    #tab-riwayat #dailyEnergyCard,
-    #tab-riwayat #comparisonCard { grid-column: 1 / -1; }
-
-    /* Atur: kontrol tracking selebar penuh, pengaturan dua kolom rapi */
-    #tab-atur { grid-template-columns: 1fr; }
-    #tab-atur .mode-block,
-    #tab-atur .section-title,
-    #tab-atur .settings-card { grid-column: 1 / -1; grid-row: auto; }
-    #tab-atur .settings-card {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      column-gap: 28px;
-      align-items: start;
-    }
-    #tab-atur .settings-card > .settings-desc,
-    #tab-atur .settings-card > .settings-divider,
-    #tab-atur .settings-card > .save-btn,
-    #tab-atur .settings-card > .save-status,
-    #tab-atur .settings-card > .telegram-note { grid-column: 1 / -1; }
-    #tab-atur .settings-card .form-row-2 { grid-template-columns: 1fr 1fr; gap: 14px; }
-    #tab-atur .settings-card .form-row-2 .form-row { margin-bottom: 14px; }
-    #tab-atur .settings-card .schedule-head { margin-bottom: 14px; min-height: 60px; }
-  }
-
-  @media (min-width: 1200px) and (orientation: landscape) {
-    .chart-wrap { height: 280px; }
-    #tab-beranda .panel3d-card #panel3dCanvas { height: 420px; }
-    #tab-beranda .stat-card .v { font-size: 2rem; }
-  }
-
-  @media (min-width: 1600px) and (orientation: landscape) {
-    .wrap { max-width: 1320px; }
-  }
-
-  /* HP landscape (layar pendek): nav jadi rail di kiri, tampilan dipadatkan */
   @media (orientation: landscape) and (max-height: 520px) {
     body {
       padding-left: calc(68px + env(safe-area-inset-left, 0px));
@@ -926,7 +877,6 @@
     }
     .bottom-nav .nav-btn { flex: none; min-height: 52px; }
 
-    /* Header tidak lagi sticky agar tidak memakan tinggi layar */
     header {
       position: static;
       margin: 0 0 10px;
@@ -936,7 +886,7 @@
     }
     header h1 { font-size: 1.2rem; }
     html { scroll-padding-top: 12px; }
-    .tab-section { scroll-margin-top: 12px; }
+    .tab-section { scroll-margin-top: 12px; animation: none; }
 
     .power-card { padding: 12px 16px; }
     .sky-value { font-size: 1.2rem; margin-bottom: 6px; }
@@ -945,8 +895,8 @@
     .section-title { margin: 14px 0 10px 2px; }
     .stat-card { padding: 12px 14px; }
     .stat-card .v { font-size: 1.2rem; }
-    #tab-sensor .sensor-grid { max-width: 420px; }
     #tab-beranda .stat-card .v { font-size: 1.2rem; }
+    #tab-sensor .sensor-grid { max-width: 420px; }
   }
 </style>
 </head>
@@ -976,7 +926,7 @@
   <!-- BANNER OFFLINE -->
   <div class="offline-banner" id="offlineBanner">
     <span>⚠️</span>
-    <div>unmonitored device —  latest data<b id="lastSeenText">—</b> ago. Check the Wi-Fi connection./power ESP32.</div>
+    <div>unmonitored device — latest data<b id="lastSeenText">—</b> ago. Check the Wi-Fi connection/power ESP32.</div>
   </div>
 
   <!-- POWER TOGGLE -->
@@ -1188,16 +1138,17 @@
 <script>
   // ============ KONFIGURASI FIREBASE ============
   const firebaseConfig = {
-    apiKey: "AIzaSyCy5udPz3Go4FIKinA-IFKHXLBj366u6kk",
-    authDomain: "solarpanelmia.firebaseapp.com",
-    projectId: "solarpanelmia",
-    storageBucket: "solarpanelmia.firebasestorage.app",
-    messagingSenderId: "183461831062",
-    appId: "1:183461831062:web:76806e5716ae64acfd7db7",
-    measurementId: "G-HRT0046T0H"
+    apiKey: "AIzaSyCK1VVCFlKs9dtHmhNNJF-JuP3Zc15w1XA",
+    authDomain: "solar-tracker-mia.firebaseapp.com",
+    databaseURL: "https://solar-tracker-mia-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "solar-tracker-mia",
+    storageBucket: "solar-tracker-mia.firebasestorage.app",
+    messagingSenderId: "737322991680",
+    appId: "1:737322991680:web:d33ec32c47f3cf4bed1fa5",
+    measurementId: "G-7QCJZVQQ28"
   };
-  const LOGIN_EMAIL = "qwersyam7@gmail.com";
-  const LOGIN_PASSWORD = "AsyamMW123.";
+  const LOGIN_EMAIL = "ssam192209@gmail.com";
+  const LOGIN_PASSWORD = "Agusitem";
   // ==================================================================
 
   // ================= THEME TOGGLE =================
@@ -1256,7 +1207,7 @@
   auth.signInWithEmailAndPassword(LOGIN_EMAIL, LOGIN_PASSWORD).catch((err) => {
     connText.textContent = "Gagal login: cek email/password";
     connDot.className = "dot offline";
-    console.error(err);
+    console.error('Auth error:', err.code, err.message);
   });
 
   db.ref(".info/connected").on("value", (snap) => {
@@ -1374,8 +1325,12 @@
         scene.add(sunMesh);
 
         window.addEventListener('resize', onResize3D);
-        // Ukuran canvas juga berubah saat rotasi layar / perubahan layout
-        if ('ResizeObserver' in window) new ResizeObserver(onResize3D).observe(container);
+        window.addEventListener('orientationchange', () => setTimeout(onResize3D, 250));
+        if ('ResizeObserver' in window) {
+          try {
+            new ResizeObserver(onResize3D).observe(container);
+          } catch (e) { /* fallback: resize event saja */ }
+        }
         animate3D();
       }
 
