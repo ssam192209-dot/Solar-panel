@@ -5,28 +5,87 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>Solar Tracker — Panel Surya Pintar</title>
 <link rel="manifest" href="manifest.json" />
-<meta name="theme-color" content="#12141f" />
+<meta name="theme-color" content="#151109" />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%94%86%3C/text%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet" />
 <style>
   :root{
-    --bg:#12141f;
-    --bg-deep:#0c0e17;
-    --surface:#1b1f33;
-    --surface-2:#232847;
-    --line:#2c3153;
-    --gold:#e8a33d;
-    --gold-dim:#8a672e;
-    --teal:#4fb0ae;
-    --teal-dim:#2c5f5e;
-    --text:#f1efe9;
-    --text-muted:#9297b0;
-    --text-faint:#5c6084;
-    --danger:#d9694f;
-    --radius-lg:22px;
-    --radius-sm:12px;
+    --bg:#151109;
+    --bg-deep:#0b0906;
+    --surface:#211a10;
+    --surface-2:#2b2214;
+    --line:#3d3120;
+    --gold:#e2892b;
+    --gold-dim:#8f5a1f;
+    --gold-bright:#f5b04a;
+    --teal:#5aa392;
+    --teal-dim:#2f5c50;
+    --text:#f4ecdc;
+    --text-muted:#a89873;
+    --text-faint:#6f6247;
+    --danger:#d1573c;
+    --radius-hero:20px;
+    --radius-lg:16px;
+    --radius-sm:10px;
+    --glass-start:rgba(43,34,20,0.94);
+    --glass-end:rgba(21,17,9,0.94);
+    --header-bg:rgba(21,17,9,0.92);
+    --nav-bg:rgba(17,14,8,0.88);
+    --shadow-color:rgba(0,0,0,0.55);
+    --sensor-bg-start:rgba(43,34,20,0.96);
+    --sensor-bg-end:rgba(21,17,9,0.96);
+  }
+
+  /* ================= LIGHT MODE ================= */
+  body.light-mode {
+    --bg:#f8f2e6;
+    --bg-deep:#ece2cd;
+    --surface:#fffdf8;
+    --surface-2:#f2e9d8;
+    --line:#e0d3b4;
+    --gold:#b8641c;
+    --gold-dim:#dca35c;
+    --gold-bright:#a5560f;
+    --teal:#2f7a68;
+    --teal-dim:#83b8a7;
+    --text:#241d10;
+    --text-muted:#786748;
+    --text-faint:#ab9974;
+    --danger:#b8452e;
+    --glass-start:rgba(255,253,248,0.96);
+    --glass-end:rgba(247,240,225,0.96);
+    --header-bg:rgba(248,242,230,0.92);
+    --nav-bg:rgba(255,253,248,0.88);
+    --shadow-color:rgba(60,40,10,0.10);
+    --sensor-bg-start:rgba(255,253,248,0.98);
+    --sensor-bg-end:rgba(247,240,225,0.98);
+  }
+
+  body.light-mode {
+    background:
+      radial-gradient(ellipse 900px 500px at 50% -10%, rgba(184,100,28,0.10), transparent 60%),
+      var(--bg);
+  }
+
+  body.light-mode .glass-card {
+    box-shadow:
+      0 14px 30px -16px var(--shadow-color),
+      0 1px 0 rgba(255,255,255,0.8) inset,
+      0 -1px 0 rgba(0,0,0,0.06) inset;
+  }
+
+  body.light-mode #panel3dCanvas {
+    background: radial-gradient(ellipse at 50% 30%, rgba(46,139,137,0.08), transparent 65%), var(--bg-deep);
+  }
+
+  body.light-mode .sensor-grid {
+    box-shadow: 0 14px 30px -16px var(--shadow-color);
+  }
+
+  body.light-mode .bottom-nav {
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.06);
   }
 
   *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
@@ -35,7 +94,7 @@
 
   body{
     background:
-      radial-gradient(ellipse 900px 500px at 50% -10%, rgba(232,163,61,0.10), transparent 60%),
+      radial-gradient(ellipse 900px 500px at 50% -10%, rgba(226,137,43,0.13), transparent 60%),
       var(--bg);
     color:var(--text);
     font-family:'IBM Plex Sans', sans-serif;
@@ -43,6 +102,7 @@
     padding-bottom:calc(84px + env(safe-area-inset-bottom, 0px));
     -webkit-font-smoothing:antialiased;
     overscroll-behavior-y:none;
+    transition: background .4s ease, color .4s ease;
   }
 
   h1,h2,h3{ font-family:'Space Grotesk', sans-serif; margin:0; }
@@ -56,17 +116,21 @@
   .tab-section{ scroll-margin-top:calc(70px + env(safe-area-inset-top, 0px)); animation:fadeInUp .45s ease both; }
   @keyframes fadeInUp{ from{ opacity:0; transform:translateY(10px); } to{ opacity:1; transform:translateY(0); } }
 
-  /* ---------- Kartu dasar bergaya glass / depth ---------- */
+  /* ---------- Kartu dasar ---------- */
   .glass-card{
-    background:linear-gradient(160deg, rgba(37,42,74,0.92), rgba(24,28,47,0.92));
-    border:1px solid rgba(255,255,255,0.06);
-    border-radius:var(--radius-sm);
+    background:linear-gradient(160deg, var(--glass-start), var(--glass-end));
+    border:1px solid rgba(255,255,255,0.05);
+    border-radius:var(--radius-lg);
     box-shadow:
-      0 14px 30px -16px rgba(0,0,0,0.6),
+      0 12px 26px -18px var(--shadow-color),
       0 1px 0 rgba(255,255,255,0.03) inset,
-      0 -1px 0 rgba(0,0,0,0.3) inset;
+      0 -1px 0 rgba(0,0,0,0.25) inset;
     backdrop-filter:blur(8px);
-    transition:transform .15s ease, box-shadow .15s ease;
+    transition:transform .15s ease, box-shadow .15s ease, background .4s ease, border-color .4s ease;
+  }
+
+  body.light-mode .glass-card {
+    border:1px solid rgba(0,0,0,0.06);
   }
 
   /* ---------- Header ---------- */
@@ -79,16 +143,49 @@
     justify-content:space-between;
     margin:0 -18px 18px;
     padding:calc(12px + env(safe-area-inset-top, 0px)) 18px 12px;
-    background:linear-gradient(180deg, rgba(18,20,31,0.92) 70%, rgba(18,20,31,0));
+    background:linear-gradient(180deg, var(--header-bg) 70%, transparent);
     backdrop-filter:blur(10px);
+    transition:background .4s ease;
   }
   header h1{
-    font-size:1.4rem;
+    font-size:1.44rem;
     font-weight:600;
-    letter-spacing:-0.01em;
-    line-height:1.25;
+    letter-spacing:-0.015em;
+    line-height:1.2;
     max-width:220px;
   }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 2px;
+  }
+
+  .theme-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    cursor: pointer;
+    font-size: 1.1rem;
+    transition: background .3s ease, border-color .3s ease, transform .2s ease;
+    padding: 0;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+  .theme-toggle:hover {
+    background: var(--surface-2);
+    transform: scale(1.08);
+  }
+  .theme-toggle:active {
+    transform: scale(0.92);
+  }
+
   .status{
     display:flex;
     align-items:center;
@@ -99,24 +196,35 @@
     background:var(--surface);
     border:1px solid var(--line);
     border-radius:999px;
-    margin-top:2px;
+    transition:background .4s ease, border-color .4s ease, color .4s ease;
   }
   .dot{
     width:7px; height:7px; border-radius:50%;
     background:var(--text-faint);
     transition:background .4s ease, box-shadow .4s ease;
   }
-  .dot.live{ background:var(--teal); box-shadow:0 0 0 3px rgba(79,176,174,0.18); }
-  .dot.offline{ background:var(--danger); box-shadow:0 0 0 3px rgba(217,105,79,0.18); }
+  .dot.live{ background:var(--teal); box-shadow:0 0 0 3px rgba(90,163,146,0.18); }
+  .dot.offline{ background:var(--danger); box-shadow:0 0 0 3px rgba(209,87,60,0.18); }
 
   /* ---------- Power card ---------- */
   .power-card{
+    position:relative;
     display:flex;
     align-items:center;
     justify-content:space-between;
     gap:14px;
-    padding:15px 16px;
+    padding:16px 17px;
     margin-bottom:14px;
+    border-radius:var(--radius-hero);
+    overflow:hidden;
+  }
+  .power-card::before{
+    content:"";
+    position:absolute;
+    top:0; left:0; right:0;
+    height:3px;
+    background:linear-gradient(90deg, var(--teal-dim), var(--gold-bright), var(--gold-dim));
+    opacity:.85;
   }
   .power-info .k{ font-size:0.95rem; font-weight:600; font-family:'Space Grotesk', sans-serif; margin-bottom:3px; }
   .power-info .d{ font-size:0.78rem; color:var(--text-muted); line-height:1.4; max-width:210px; }
@@ -131,7 +239,7 @@
     box-shadow:0 2px 4px rgba(0,0,0,0.4);
     transition:transform .3s cubic-bezier(.4,0,.2,1), background .3s ease;
   }
-  .power-switch.on{ background:rgba(79,176,174,0.18); border-color:var(--teal-dim); }
+  .power-switch.on{ background:rgba(90,163,146,0.18); border-color:var(--teal-dim); }
   .power-switch.on .knob{ transform:translateX(22px); background:var(--teal); }
 
   .fadeable{ transition:opacity .4s ease, filter .4s ease; }
@@ -143,6 +251,7 @@
     padding:16px 16px 14px;
     margin-bottom:14px;
     overflow:hidden;
+    border-radius:var(--radius-hero);
   }
   .panel3d-top{
     display:flex; justify-content:space-between; align-items:center;
@@ -155,12 +264,12 @@
   }
   .live-badge .pulse{
     width:6px; height:6px; border-radius:50%; background:var(--teal);
-    box-shadow:0 0 0 0 rgba(79,176,174,0.6);
+    box-shadow:0 0 0 0 rgba(90,163,146,0.6);
     animation:pulse 1.8s ease-out infinite;
   }
   @keyframes pulse{
-    0%{ box-shadow:0 0 0 0 rgba(79,176,174,0.5); }
-    100%{ box-shadow:0 0 0 8px rgba(79,176,174,0); }
+    0%{ box-shadow:0 0 0 0 rgba(90,163,146,0.5); }
+    100%{ box-shadow:0 0 0 8px rgba(90,163,146,0); }
   }
   .sky-value{
     font-family:'Space Grotesk', sans-serif;
@@ -176,8 +285,9 @@
     height:230px;
     border-radius:14px;
     overflow:hidden;
-    background:radial-gradient(ellipse at 50% 30%, rgba(79,176,174,0.08), transparent 65%), var(--bg-deep);
+    background:radial-gradient(ellipse at 50% 30%, rgba(90,163,146,0.08), transparent 65%), var(--bg-deep);
     touch-action:none;
+    transition:background .4s ease;
   }
   #panel3dCanvas canvas{ display:block; width:100%; height:100%; }
   .drag-hint{
@@ -189,6 +299,9 @@
     padding:3px 8px;
     border-radius:999px;
     pointer-events:none;
+  }
+  body.light-mode .drag-hint {
+    background:rgba(255,255,255,0.7);
   }
 
   .angle-readout{
@@ -207,8 +320,8 @@
     display:none;
     gap:10px;
     align-items:flex-start;
-    background:linear-gradient(135deg, rgba(217,105,79,0.16), rgba(217,105,79,0.05));
-    border:1px solid #8a3f2e;
+    background:linear-gradient(135deg, rgba(209,87,60,0.16), rgba(209,87,60,0.05));
+    border:1px solid #6e3325;
     border-radius:var(--radius-sm);
     padding:12px 14px;
     margin-bottom:16px;
@@ -218,11 +331,16 @@
   }
   .offline-banner b{ color:var(--danger); }
   body.device-offline .offline-banner{ display:flex; }
-  .stat-card{ padding:15px 16px; }
-  .stat-card .k{ font-size:0.74rem; color:var(--text-muted); margin-bottom:6px; }
-  .stat-card .v{ font-family:'Space Grotesk', sans-serif; font-size:1.3rem; font-weight:600; }
+  .stat-card{
+    padding:14px 15px;
+    border-radius:var(--radius-sm);
+    box-shadow:none;
+    border-color:var(--line);
+  }
+  .stat-card .k{ font-size:0.72rem; color:var(--text-muted); margin-bottom:6px; }
+  .stat-card .v{ font-family:'Space Grotesk', sans-serif; font-size:1.28rem; font-weight:600; }
   .stat-card .v.teal{ color:var(--teal); }
-  .stat-card .v small{ font-size:0.7rem; color:var(--text-muted); font-weight:400; margin-left:2px; }
+  .stat-card .v small{ font-size:0.68rem; color:var(--text-muted); font-weight:400; margin-left:2px; }
 
   /* ---------- Section titles ---------- */
   .section-title{ font-size:0.95rem; font-weight:600; margin:22px 0 12px 2px; color:var(--text); }
@@ -269,12 +387,14 @@
     display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr;
     gap:2px; background:var(--line); border:1px solid var(--line);
     border-radius:var(--radius-sm); overflow:hidden; aspect-ratio:1/1; margin-bottom:14px;
-    box-shadow:0 14px 30px -16px rgba(0,0,0,0.6);
+    box-shadow:0 14px 30px -16px var(--shadow-color);
+    transition:background .4s ease, border-color .4s ease;
   }
   .sensor-cell{
-    background:linear-gradient(160deg, rgba(37,42,74,0.95), rgba(24,28,47,0.95));
+    background:linear-gradient(160deg, var(--sensor-bg-start), var(--sensor-bg-end));
     display:flex; flex-direction:column; justify-content:center; align-items:center;
     gap:6px; padding:10px; position:relative;
+    transition:background .4s ease;
   }
   .sensor-cell .pos{ position:absolute; top:9px; left:10px; font-size:0.62rem; color:var(--text-faint); font-family:'IBM Plex Mono', monospace; }
   .sensor-cell .bulb{ width:10px; height:10px; border-radius:50%; background:var(--gold-dim); transition:background .3s ease, box-shadow .3s ease; }
@@ -338,6 +458,7 @@
     font-family:'IBM Plex Mono', monospace;
     font-size:0.9rem;
     outline:none;
+    transition:background .4s ease, border-color .4s ease, color .4s ease;
   }
   .settings-card input[type="number"]:focus{ border-color:var(--gold-dim); }
   .settings-divider{ height:1px; background:var(--line); margin:6px 0 16px; }
@@ -356,6 +477,9 @@
     font-size:0.88rem;
     cursor:pointer;
     transition:filter .2s ease;
+  }
+  body.light-mode .save-btn {
+    color: #ffffff;
   }
   .save-btn:hover{ filter:brightness(1.08); }
   .save-status{ text-align:center; font-size:0.75rem; color:var(--teal); margin-top:8px; min-height:1em; }
@@ -377,10 +501,11 @@
     display:flex;
     max-width:460px;
     margin:0 auto;
-    background:rgba(20,23,39,0.85);
+    background:var(--nav-bg);
     backdrop-filter:blur(14px);
     border-top:1px solid var(--line);
     padding:8px 6px calc(8px + env(safe-area-inset-bottom, 0px));
+    transition:background .4s ease, border-color .4s ease;
   }
   .nav-btn{
     flex:1;
@@ -401,17 +526,428 @@
     transition:color .2s ease, background .2s ease, transform .15s ease;
   }
   .nav-btn .nav-icon{ font-size:1.15rem; line-height:1; filter:grayscale(1) opacity(0.6); transition:filter .2s ease; }
-  .nav-btn.active{ color:var(--gold); background:rgba(232,163,61,0.09); }
+  .nav-btn.active{ color:var(--gold); background:rgba(226,137,43,0.09); }
   .nav-btn.active .nav-icon{ filter:none; }
   .nav-btn:active{ transform:scale(0.92); }
 
-  /* ---------- Polish interaksi umum (feedback tekan, hover kartu) ---------- */
+  body.light-mode .nav-btn.active {
+    background:rgba(184,100,28,0.12);
+  }
+
+  /* ---------- Polish interaksi umum ---------- */
   .glass-card:active{ transform:scale(0.995); }
   .power-switch:active .knob, .toggle-pill button:active, .range-btn:active,
-  .save-btn:active, .export-btn:active, .nav-btn:active{ filter:brightness(0.94); }
-  .save-btn, .export-btn, .toggle-pill button, .range-btn, .power-switch{ -webkit-tap-highlight-color:transparent; }
+  .save-btn:active, .export-btn:active, .nav-btn:active, .theme-toggle:active{ filter:brightness(0.94); }
+  .save-btn, .export-btn, .toggle-pill button, .range-btn, .power-switch, .theme-toggle{ -webkit-tap-highlight-color:transparent; }
   input[type="range"]::-webkit-slider-thumb{ width:22px; height:22px; margin-top:-9px; }
   .section-title{ display:flex; align-items:center; gap:6px; }
+
+  /* Ikon tema */
+  .theme-toggle .icon-sun,
+  .theme-toggle .icon-moon { display: none; }
+
+  body:not(.light-mode) .theme-toggle .icon-sun { display: inline; }
+  body.light-mode .theme-toggle .icon-moon { display: inline; }
+
+  /* Navigasi desktop (default hidden) */
+  .desktop-nav { display: none; }
+
+  /* ============================================================
+     ============ LANDSCAPE: HP/TABLET/DESKTOP (≥600px) =========
+     ============================================================ */
+  @media (min-width: 600px) and (orientation: landscape) {
+    .wrap {
+      max-width: 960px;
+      padding: calc(20px + env(safe-area-inset-top, 0px)) 32px 0;
+    }
+
+    header {
+      margin: 0 -32px 24px;
+      padding: calc(16px + env(safe-area-inset-top, 0px)) 32px 16px;
+    }
+
+    header h1 { font-size: 1.7rem; max-width: none; }
+
+    .bottom-nav { display: none; }
+    body { padding-bottom: 40px; }
+
+    /* Navigasi desktop */
+    .desktop-nav {
+      display: flex;
+      gap: 6px;
+      margin: 0 0 22px;
+      padding: 5px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      width: fit-content;
+      box-shadow: 0 4px 12px -6px var(--shadow-color);
+      transition: background .4s ease, border-color .4s ease;
+    }
+    .desktop-nav .nav-btn {
+      flex: none;
+      flex-direction: row;
+      min-height: auto;
+      padding: 9px 18px;
+      gap: 8px;
+      font-size: 0.82rem;
+      border-radius: 999px;
+      color: var(--text-muted);
+      transition: color .2s ease, background .2s ease, transform .15s ease;
+    }
+    .desktop-nav .nav-btn .nav-icon { font-size: 1rem; filter: grayscale(1) opacity(0.55); }
+    .desktop-nav .nav-btn.active { color: var(--bg-deep); background: var(--gold); }
+    .desktop-nav .nav-btn.active .nav-icon { filter: none; }
+    .desktop-nav .nav-btn:hover:not(.active) { color: var(--text); background: var(--surface-2); }
+
+    /* Beranda */
+    #tab-beranda {
+      display: grid;
+      grid-template-columns: 1.15fr 1fr;
+      gap: 18px;
+      align-items: start;
+    }
+    #tab-beranda .power-card { grid-column: 1 / -1; margin-bottom: 0; }
+    #tab-beranda .panel3d-card {
+      grid-column: 1 / 2;
+      grid-row: 2 / 4;
+      margin-bottom: 0;
+      height: 100%;
+    }
+    #tab-beranda .panel3d-card #panel3dCanvas { height: 340px; }
+    #tab-beranda .stat-row {
+      grid-column: 2 / 3;
+      grid-row: 2 / 3;
+      grid-template-columns: 1fr 1fr;
+      margin-bottom: 0;
+    }
+
+    /* Riwayat */
+    #tab-riwayat {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      align-items: start;
+    }
+    #tab-riwayat .section-title,
+    #tab-riwayat .stat-row { grid-column: 1 / -1; }
+    #tab-riwayat .stat-row { grid-template-columns: 1fr 1fr; max-width: 480px; }
+    #tab-riwayat #dailyEnergyCard,
+    #tab-riwayat #voltageChartCard,
+    #tab-riwayat #hourlyChartCard,
+    #tab-riwayat #comparisonCard { margin-bottom: 0; }
+    #tab-riwayat #voltageChartCard { grid-column: 1 / -1; }
+    #tab-riwayat #hourlyChartCard { grid-column: 1 / -1; }
+
+    /* Sensor */
+    #tab-sensor {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 18px;
+      align-items: start;
+    }
+    #tab-sensor .section-title { grid-column: 1 / -1; margin-top: 0; }
+    #tab-sensor .sensor-grid {
+      margin-bottom: 0;
+      max-width: 480px;
+      aspect-ratio: 1.15 / 1;
+    }
+
+    /* Atur */
+    #tab-atur {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      align-items: start;
+    }
+    #tab-atur .mode-block { grid-column: 1 / 2; margin-bottom: 0; }
+    #tab-atur .section-title { grid-column: 1 / -1; margin-top: 0; }
+    #tab-atur .settings-card { grid-column: 1 / -1; margin-bottom: 0; }
+    #tab-atur .settings-card .form-row-2 { gap: 18px; }
+
+    .section-title { font-size: 1.05rem; margin: 26px 0 14px 2px; }
+    .chart-wrap canvas { height: 220px !important; }
+
+    .stat-card { padding: 18px 20px; }
+    .stat-card .v { font-size: 1.5rem; }
+    .power-card { padding: 20px 22px; }
+    .chart-card { padding: 20px 22px 14px; }
+    .settings-card { padding: 22px 24px; }
+    .mode-block { padding: 22px 24px; }
+    .sensor-cell .val { font-size: 1.15rem; }
+    .sensor-cell .bulb { width: 13px; height: 13px; }
+    footer { margin-top: 32px; font-size: 0.78rem; }
+
+    html { scroll-padding-top: 100px; }
+    .tab-section { scroll-margin-top: 100px; animation: none; }
+
+    .theme-toggle { width: 42px; height: 42px; font-size: 1.2rem; }
+    .status { font-size: 0.82rem; padding: 8px 14px 8px 11px; }
+  }
+
+  /* ============================================================
+     ====== LANDSCAPE: DESKTOP BESAR (≥1200px) =================
+     ============================================================ */
+  @media (min-width: 1200px) and (orientation: landscape) {
+    .wrap {
+      max-width: 1180px;
+      padding-left: 48px;
+      padding-right: 48px;
+    }
+    header {
+      margin: 0 -48px 28px;
+      padding-left: 48px;
+      padding-right: 48px;
+    }
+    header h1 { font-size: 1.85rem; }
+
+    #tab-beranda { grid-template-columns: 1.3fr 1fr; gap: 22px; }
+    #tab-beranda .panel3d-card #panel3dCanvas { height: 400px; }
+    #tab-riwayat { gap: 22px; }
+    #tab-atur { grid-template-columns: 1fr 1.15fr; gap: 22px; }
+    #tab-atur .settings-card .form-row-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 18px;
+    }
+    #tab-atur .settings-card .form-row-2 .form-row { margin-bottom: 0; }
+
+    .chart-wrap canvas { height: 260px !important; }
+    .stat-card .v { font-size: 1.65rem; }
+  }
+
+  /* ============================================================
+     ====== PORTRAIT: TABLET/DESKTOP VERTIKAL (≥820px) =========
+     ====== Layout 1 kolom lega, desktop nav tetap muncul =======
+     ============================================================ */
+  @media (min-width: 820px) and (orientation: portrait) {
+    .wrap {
+      max-width: 720px;
+      padding: calc(20px + env(safe-area-inset-top, 0px)) 28px 0;
+    }
+    header {
+      margin: 0 -28px 22px;
+      padding: calc(16px + env(safe-area-inset-top, 0px)) 28px 16px;
+    }
+    header h1 { font-size: 1.7rem; max-width: none; }
+
+    .bottom-nav { display: none; }
+    body { padding-bottom: 40px; }
+
+    /* Navigasi desktop tetap muncul */
+    .desktop-nav {
+      display: flex;
+      gap: 6px;
+      margin: 0 0 22px;
+      padding: 5px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      width: fit-content;
+      box-shadow: 0 4px 12px -6px var(--shadow-color);
+      transition: background .4s ease, border-color .4s ease;
+    }
+    .desktop-nav .nav-btn {
+      flex: none;
+      flex-direction: row;
+      min-height: auto;
+      padding: 9px 18px;
+      gap: 8px;
+      font-size: 0.82rem;
+      border-radius: 999px;
+      color: var(--text-muted);
+    }
+    .desktop-nav .nav-btn .nav-icon { font-size: 1rem; filter: grayscale(1) opacity(0.55); }
+    .desktop-nav .nav-btn.active { color: var(--bg-deep); background: var(--gold); }
+    .desktop-nav .nav-btn.active .nav-icon { filter: none; }
+    .desktop-nav .nav-btn:hover:not(.active) { color: var(--text); background: var(--surface-2); }
+
+    /* Tetap satu kolom */
+    #tab-beranda,
+    #tab-riwayat,
+    #tab-sensor,
+    #tab-atur {
+      display: block;
+    }
+
+    /* Tapi ruang diperbesar */
+    #tab-beranda .panel3d-card #panel3dCanvas { height: 360px; }
+    #tab-beranda .stat-row { grid-template-columns: 1fr 1fr; }
+    #tab-riwayat .stat-row { grid-template-columns: 1fr 1fr; max-width: none; }
+    #tab-sensor .sensor-grid {
+      max-width: 560px;
+      margin-left: auto;
+      margin-right: auto;
+      aspect-ratio: 1 / 1;
+    }
+
+    .stat-card { padding: 18px 20px; }
+    .stat-card .v { font-size: 1.5rem; }
+    .power-card { padding: 20px 22px; }
+    .chart-card { padding: 20px 22px 14px; }
+    .settings-card { padding: 22px 24px; }
+    .mode-block { padding: 22px 24px; }
+    .chart-wrap canvas { height: 240px !important; }
+    .sensor-cell .val { font-size: 1.15rem; }
+    .sensor-cell .bulb { width: 13px; height: 13px; }
+    footer { margin-top: 32px; font-size: 0.78rem; }
+
+    html { scroll-padding-top: 100px; }
+    .tab-section { scroll-margin-top: 100px; animation: none; }
+
+    .theme-toggle { width: 42px; height: 42px; font-size: 1.2rem; }
+    .status { font-size: 0.82rem; padding: 8px 14px 8px 11px; }
+  }
+
+  /* ============================================================
+     ====== PORTRAIT SANGAT BESAR (≥1200px portrait) ============
+     ====== (monitor portrait 4K, dsb) ==========================
+     ============================================================ */
+  @media (min-width: 1200px) and (orientation: portrait) {
+    .wrap {
+      max-width: 860px;
+      padding-left: 40px;
+      padding-right: 40px;
+    }
+    header {
+      margin: 0 -40px 26px;
+      padding-left: 40px;
+      padding-right: 40px;
+    }
+    header h1 { font-size: 1.85rem; }
+
+    #tab-beranda .panel3d-card #panel3dCanvas { height: 420px; }
+    .chart-wrap canvas { height: 280px !important; }
+    .stat-card .v { font-size: 1.65rem; }
+    .sensor-grid { max-width: 640px; }
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: var(--bg-deep); }
+  ::-webkit-scrollbar-thumb {
+    background: var(--line);
+    border-radius: 6px;
+    border: 2px solid var(--bg-deep);
+  }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-faint); }
+
+  /* ============================================================
+     ============ PERBAIKAN LANDSCAPE (tambahan) ================
+     ============================================================ */
+  @media (min-width: 600px) and (orientation: landscape) {
+    body { padding-right: env(safe-area-inset-right, 0px); }
+
+    /* Tinggi grafik ditentukan wrapper, bukan canvas */
+    .chart-wrap { height: 220px; }
+    .chart-wrap canvas { height: 100% !important; }
+
+    /* Sensor: grid dipusatkan, tidak ada kolom kosong */
+    #tab-sensor .sensor-grid {
+      grid-column: 1 / -1;
+      width: 100%;
+      max-width: 520px;
+      margin: 0 auto;
+      aspect-ratio: 1.6 / 1;
+    }
+
+    /* Atur: kontrol di kiri, pengaturan di kanan */
+    #tab-atur .mode-block { grid-column: 1 / 2; grid-row: 1 / 3; }
+    #tab-atur .section-title { grid-column: 2 / 3; grid-row: 1; margin: 0; }
+    #tab-atur .settings-card { grid-column: 2 / 3; grid-row: 2; }
+    #tab-atur .settings-card .form-row-2 { grid-template-columns: 1fr 1fr; }
+  }
+
+  /* ===== PERBAIKAN LAYOUT LAPTOP / DESKTOP ===== */
+  @media (min-width: 600px) and (orientation: landscape) {
+    /* Beranda: 3D di kiri, kartu statistik di kanan setinggi kartu 3D */
+    #tab-beranda .panel3d-card { grid-row: 2; height: auto; }
+    #tab-beranda .stat-row { grid-row: 2; align-self: stretch; grid-template-rows: 1fr 1fr; }
+    #tab-beranda .stat-card { display: flex; flex-direction: column; justify-content: center; }
+    #tab-beranda .stat-card .v { font-size: 1.7rem; }
+
+    /* Riwayat: semua blok selebar penuh, tidak ada kolom kosong */
+    #tab-riwayat .stat-row { max-width: none; }
+    #tab-riwayat #dailyEnergyCard,
+    #tab-riwayat #comparisonCard { grid-column: 1 / -1; }
+
+    /* Atur: kontrol tracking selebar penuh, pengaturan dua kolom rapi */
+    #tab-atur { grid-template-columns: 1fr; }
+    #tab-atur .mode-block,
+    #tab-atur .section-title,
+    #tab-atur .settings-card { grid-column: 1 / -1; grid-row: auto; }
+    #tab-atur .settings-card {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      column-gap: 28px;
+      align-items: start;
+    }
+    #tab-atur .settings-card > .settings-desc,
+    #tab-atur .settings-card > .settings-divider,
+    #tab-atur .settings-card > .save-btn,
+    #tab-atur .settings-card > .save-status,
+    #tab-atur .settings-card > .telegram-note { grid-column: 1 / -1; }
+    #tab-atur .settings-card .form-row-2 { grid-template-columns: 1fr 1fr; gap: 14px; }
+    #tab-atur .settings-card .form-row-2 .form-row { margin-bottom: 14px; }
+    #tab-atur .settings-card .schedule-head { margin-bottom: 14px; min-height: 60px; }
+  }
+
+  @media (min-width: 1200px) and (orientation: landscape) {
+    .chart-wrap { height: 280px; }
+    #tab-beranda .panel3d-card #panel3dCanvas { height: 420px; }
+    #tab-beranda .stat-card .v { font-size: 2rem; }
+  }
+
+  @media (min-width: 1600px) and (orientation: landscape) {
+    .wrap { max-width: 1320px; }
+  }
+
+  /* HP landscape (layar pendek): nav jadi rail di kiri, tampilan dipadatkan */
+  @media (orientation: landscape) and (max-height: 520px) {
+    body {
+      padding-left: calc(68px + env(safe-area-inset-left, 0px));
+      padding-bottom: 16px;
+    }
+    .wrap { max-width: none; padding: 8px 20px 0; }
+
+    .desktop-nav { display: none; }
+    .bottom-nav {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 6px;
+      left: 0; right: auto; top: 0; bottom: 0;
+      width: calc(64px + env(safe-area-inset-left, 0px));
+      max-width: none;
+      margin: 0;
+      padding: 8px 6px 8px calc(6px + env(safe-area-inset-left, 0px));
+      border-top: none;
+      border-right: 1px solid var(--line);
+    }
+    .bottom-nav .nav-btn { flex: none; min-height: 52px; }
+
+    /* Header tidak lagi sticky agar tidak memakan tinggi layar */
+    header {
+      position: static;
+      margin: 0 0 10px;
+      padding: 6px 0;
+      background: none;
+      backdrop-filter: none;
+    }
+    header h1 { font-size: 1.2rem; }
+    html { scroll-padding-top: 12px; }
+    .tab-section { scroll-margin-top: 12px; }
+
+    .power-card { padding: 12px 16px; }
+    .sky-value { font-size: 1.2rem; margin-bottom: 6px; }
+    #tab-beranda .panel3d-card #panel3dCanvas { height: clamp(180px, 62vh, 300px); }
+    .chart-wrap { height: 170px; }
+    .section-title { margin: 14px 0 10px 2px; }
+    .stat-card { padding: 12px 14px; }
+    .stat-card .v { font-size: 1.2rem; }
+    #tab-sensor .sensor-grid { max-width: 420px; }
+    #tab-beranda .stat-card .v { font-size: 1.2rem; }
+  }
 </style>
 </head>
 <body>
@@ -420,21 +956,35 @@
 
   <header>
     <h1>Solar Tracker</h1>
-    <div class="status"><span class="dot" id="connDot"></span><span id="connText">Menghubungkan…</span></div>
+    <div class="header-right">
+      <button class="theme-toggle" id="themeToggle" aria-label="Ganti tema" title="Ganti tema">
+        <span class="icon-sun">☀️</span>
+        <span class="icon-moon">🌙</span>
+      </button>
+      <div class="status"><span class="dot" id="connDot"></span><span id="connText">Connecting</span></div>
+    </div>
   </header>
+
+  <!-- NAVIGASI DESKTOP -->
+  <nav class="desktop-nav" id="desktopNav">
+    <button class="nav-btn active" data-target="tab-beranda"><span class="nav-icon">🏠</span><span>Beranda</span></button>
+    <button class="nav-btn" data-target="tab-riwayat"><span class="nav-icon">📊</span><span>Riwayat</span></button>
+    <button class="nav-btn" data-target="tab-sensor"><span class="nav-icon">☀️</span><span>Sensor</span></button>
+    <button class="nav-btn" data-target="tab-atur"><span class="nav-icon">⚙️</span><span>Atur</span></button>
+  </nav>
 
   <!-- BANNER OFFLINE -->
   <div class="offline-banner" id="offlineBanner">
     <span>⚠️</span>
-    <div>Perangkat tidak terpantau — data terakhir <b id="lastSeenText">—</b> yang lalu. Cek koneksi WiFi/power ESP32.</div>
+    <div>unmonitored device —  latest data<b id="lastSeenText">—</b> ago. Check the Wi-Fi connection./power ESP32.</div>
   </div>
 
   <!-- POWER TOGGLE -->
   <section id="tab-beranda" class="tab-section">
   <div class="power-card glass-card">
     <div class="power-info">
-      <div class="k" id="powerLabel">Panel aktif</div>
-      <div class="d" id="powerDesc">Tracking berjalan normal.</div>
+      <div class="k" id="powerLabel">active panel</div>
+      <div class="d" id="powerDesc">Tracking running normally.</div>
     </div>
     <div class="power-switch on" id="powerSwitch" role="switch" aria-checked="true">
       <div class="knob"></div>
@@ -444,12 +994,12 @@
   <!-- 3D VIEWER -->
   <div class="panel3d-card glass-card fadeable">
     <div class="panel3d-top">
-      <span class="panel3d-label">Posisi panel — 3D live</span>
+      <span class="panel3d-label">panel position — 3D live</span>
       <span class="live-badge"><span class="pulse"></span>LIVE</span>
     </div>
-    <div class="sky-value">Menghadap <span id="headingWord">—</span></div>
+    <div class="sky-value">direction <span id="headingWord">—</span></div>
     <div id="panel3dCanvas">
-      <span class="drag-hint">seret untuk putar</span>
+      <span class="drag-hint">Drag to rotate</span>
     </div>
     <div class="angle-readout">
       <div><div class="k">Azimuth</div><div class="v" id="azVal">— °</div></div>
@@ -464,15 +1014,15 @@
       <div class="v teal" id="voltVal">— <small>V</small></div>
     </div>
     <div class="stat-card glass-card">
-      <div class="k">Arus panel</div>
+      <div class="k">panel voltage</div>
       <div class="v teal" id="currentVal">— <small>A</small></div>
     </div>
     <div class="stat-card glass-card">
-      <div class="k">Daya sekarang</div>
+      <div class="k">current power</div>
       <div class="v" id="powerWattVal">— <small>W</small></div>
     </div>
     <div class="stat-card glass-card">
-      <div class="k">Mode aktif</div>
+      <div class="k">active mode</div>
       <div class="v" id="modeVal">—</div>
     </div>
   </div>
@@ -481,73 +1031,73 @@
 
   <!-- ENERGI -->
   <section id="tab-riwayat" class="tab-section">
-  <div class="section-title">Energi dihasilkan</div>
+  <div class="section-title">energy is produced</div>
   <div class="stat-row fadeable" style="grid-template-columns:1fr 1fr;">
     <div class="stat-card glass-card">
-      <div class="k">Hari ini</div>
+      <div class="k">today</div>
       <div class="v" id="energyTodayVal">— <small>Wh</small></div>
     </div>
     <div class="stat-card glass-card">
-      <div class="k">Total sepanjang waktu</div>
+      <div class="k">all time</div>
       <div class="v" id="energyTotalVal">— <small>kWh</small></div>
     </div>
   </div>
 
   <div class="chart-card glass-card fadeable" id="dailyEnergyCard">
     <div class="chart-head">
-      <div><span class="cs-k">Energi harian</span></div>
+      <div><span class="cs-k">Daily energy</span></div>
     </div>
     <div class="chart-wrap"><canvas id="dailyEnergyChart" height="150"></canvas></div>
-    <div class="chart-empty">Belum ada catatan harian</div>
+    <div class="chart-empty">There are no daily records yet.</div>
   </div>
 
   <div class="stat-card glass-card fadeable" id="comparisonCard" style="display:none; margin-bottom:16px;">
-    <div class="k">Dibanding panel statis (hari ini)</div>
+    <div class="k">compared to static panels (today)</div>
     <div class="v" id="comparisonVal">—</div>
   </div>
 
   <!-- RIWAYAT TEGANGAN -->
-  <div class="section-title">Riwayat tegangan</div>
+  <div class="section-title">Voltage History</div>
   <div class="chart-card glass-card fadeable" id="voltageChartCard">
     <div class="chart-head">
       <div class="chart-stats">
-        <div><span class="cs-k">Sekarang</span><span class="cs-v" id="chNow">— V</span></div>
-        <div><span class="cs-k">Rata-rata</span><span class="cs-v" id="chAvg">— V</span></div>
-        <div><span class="cs-k">Puncak</span><span class="cs-v" id="chMax">— V</span></div>
+        <div><span class="cs-k">Now</span><span class="cs-v" id="chNow">— V</span></div>
+        <div><span class="cs-k">Average</span><span class="cs-v" id="chAvg">— V</span></div>
+        <div><span class="cs-k">Peak</span><span class="cs-v" id="chMax">— V</span></div>
       </div>
       <div class="range-pill">
-        <button class="range-btn active" data-hours="24">24 jam</button>
-        <button class="range-btn" data-hours="168">7 hari</button>
+        <button class="range-btn active" data-hours="24">24 hours</button>
+        <button class="range-btn" data-hours="168">7 days</button>
       </div>
     </div>
     <div class="chart-wrap"><canvas id="voltageChart" height="150"></canvas></div>
-    <div class="chart-empty">Belum ada data riwayat — menunggu pencatatan pertama dari ESP32.</div>
-    <button class="export-btn" id="exportCsvBtn">⬇ Ekspor riwayat</button>
+    <div class="chart-empty">No data available — Waiting for data from ESP32.</div>
+    <button class="export-btn" id="exportCsvBtn">⬇ Export History</button>
   </div>
 
   <!-- JAM PALING EFEKTIF -->
-  <div class="section-title">Jam paling efektif</div>
+  <div class="section-title">Most Effective Hours</div>
   <div class="chart-card glass-card fadeable" id="hourlyChartCard">
     <div class="chart-head">
       <div>
-        <span class="cs-k">Rata-rata tegangan tiap jam</span>
+        <span class="cs-k">average hourly voltage</span>
         <div class="peak-summary" id="peakHourText">—</div>
       </div>
     </div>
     <div class="chart-wrap"><canvas id="hourlyChart" height="150"></canvas></div>
-    <div class="chart-empty">Belum ada cukup data untuk menghitung rata-rata per jam.</div>
+    <div class="chart-empty">No data available — Waiting for data from ESP32.</div>
   </div>
 
   </section>
 
   <!-- SENSOR GRID -->
   <section id="tab-sensor" class="tab-section">
-  <div class="section-title">Sensor cahaya (LDR)</div>
+  <div class="section-title">Light Sensors (LDR)</div>
   <div class="sensor-grid fadeable">
-    <div class="sensor-cell"><span class="pos">KI-ATAS</span><div class="bulb" id="bulbTL"></div><div class="val" id="valTL">—</div></div>
-    <div class="sensor-cell"><span class="pos">KA-ATAS</span><div class="bulb" id="bulbTR"></div><div class="val" id="valTR">—</div></div>
-    <div class="sensor-cell"><span class="pos">KI-BAWAH</span><div class="bulb" id="bulbBL"></div><div class="val" id="valBL">—</div></div>
-    <div class="sensor-cell"><span class="pos">KA-BAWAH</span><div class="bulb" id="bulbBR"></div><div class="val" id="valBR">—</div></div>
+    <div class="sensor-cell"><span class="pos">Top Left</span><div class="bulb" id="bulbTL"></div><div class="val" id="valTL">—</div></div>
+    <div class="sensor-cell"><span class="pos">Top Right</span><div class="bulb" id="bulbTR"></div><div class="val" id="valTR">—</div></div>
+    <div class="sensor-cell"><span class="pos">Bottom Left</span><div class="bulb" id="bulbBL"></div><div class="val" id="valBL">—</div></div>
+    <div class="sensor-cell"><span class="pos">Bottom Right</span><div class="bulb" id="bulbBR"></div><div class="val" id="valBR">—</div></div>
   </div>
 
   </section>
@@ -555,7 +1105,7 @@
   <!-- MODE + MANUAL CONTROL -->
   <section id="tab-atur" class="tab-section">
   <div class="mode-block glass-card fadeable">
-    <div class="mode-head"><h3>Kontrol tracking</h3></div>
+    <div class="mode-head"><h3>tracking control</h3></div>
 
     <div class="toggle-pill">
       <div class="toggle-thumb" id="toggleThumb"></div>
@@ -569,7 +1119,7 @@
         <input type="range" id="azSlider" min="10" max="170" value="90" disabled />
       </div>
       <div class="slider-row">
-        <div class="lbl"><span>Elevasi</span><b id="elSliderLabel">90°</b></div>
+        <div class="lbl"><span>Elevation</span><b id="elSliderLabel">90°</b></div>
         <input type="range" id="elSlider" min="10" max="170" value="90" disabled />
       </div>
     </div>
@@ -581,34 +1131,34 @@
     <div class="settings-desc">Nilai ini dibaca langsung oleh ESP32 dari Firebase</div>
 
     <div class="form-row">
-      <label for="cfgLightThreshold">Ambang cahaya (toleransi tracking)</label>
+      <label for="cfgLightThreshold">Light threshold (tracking tolerance)</label>
       <input type="number" id="cfgLightThreshold" min="1" max="500" />
     </div>
     <div class="form-row-2">
-      <div class="form-row"><label for="cfgServoMin">Batas servo minimum (°)</label><input type="number" id="cfgServoMin" min="0" max="180" /></div>
-      <div class="form-row"><label for="cfgServoMax">Batas servo maksimum (°)</label><input type="number" id="cfgServoMax" min="0" max="180" /></div>
+      <div class="form-row"><label for="cfgServoMin">Servo minimum limit (°)</label><input type="number" id="cfgServoMin" min="0" max="180" /></div>
+      <div class="form-row"><label for="cfgServoMax">Servo maximum limit (°)</label><input type="number" id="cfgServoMax" min="0" max="180" /></div>
     </div>
     <div class="form-row-2">
       <div class="form-row"><label for="cfgStandbyAz">Standby azimuth (°)</label><input type="number" id="cfgStandbyAz" min="0" max="180" /></div>
-      <div class="form-row"><label for="cfgStandbyEl">Standby elevasi (°)</label><input type="number" id="cfgStandbyEl" min="0" max="180" /></div>
+      <div class="form-row"><label for="cfgStandbyEl">Standby elevation (°)</label><input type="number" id="cfgStandbyEl" min="0" max="180" /></div>
     </div>
     <div class="form-row">
-      <label for="cfgLowVoltage">Ambang alert tegangan rendah (V)</label>
+      <label for="cfgLowVoltage">Low-voltage alert threshold (V)</label>
       <input type="number" id="cfgLowVoltage" min="0" max="50" step="0.1" />
     </div>
 
     <div class="settings-divider"></div>
 
     <div class="schedule-head">
-      <label>Jadwal otomatis</label>
+      <label>Automatic schedule</label>
       <div class="power-switch" id="scheduleSwitch"><div class="knob"></div></div>
     </div>
     <div class="form-row-2">
-      <div class="form-row"><label for="cfgParkHour">Mulai Mati</label><input type="number" id="cfgParkHour" min="0" max="23" /></div>
-      <div class="form-row"><label for="cfgWakeHour">Aktif lagi</label><input type="number" id="cfgWakeHour" min="0" max="23" /></div>
+      <div class="form-row"><label for="cfgParkHour">Start Shutdown</label><input type="number" id="cfgParkHour" min="0" max="23" /></div>
+      <div class="form-row"><label for="cfgWakeHour">Restart</label><input type="number" id="cfgWakeHour" min="0" max="23" /></div>
     </div>
 
-    <button class="save-btn" id="saveConfigBtn">Simpan pengaturan</button>
+    <button class="save-btn" id="saveConfigBtn">Save settings</button>
     <div class="save-status" id="saveStatus"></div>
 
     <div class="telegram-note">💬 Notifikasi Telegram (isi <code>TELEGRAM_BOT_TOKEN</code> &amp; set <code>TELEGRAM_ENABLED</code> ke <code>true</code>), bukan dari halaman ini.</div>
@@ -616,7 +1166,7 @@
 
   </section>
 
-  <footer id="lastUpdated">Menunggu data pertama…</footer>
+  <footer id="lastUpdated">Waiting for data...</footer>
 
 </div>
 
@@ -628,6 +1178,7 @@
   <button class="nav-btn" data-target="tab-atur"><span class="nav-icon">⚙️</span><span>Atur</span></button>
 </nav>
 
+<!-- ======================= FIREBASE ======================= -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
@@ -635,16 +1186,64 @@
 
 <!-- ======================= APLIKASI UTAMA ======================= -->
 <script>
-  // ============ JANLUP ISI INI!!! ============
+  // ============ KONFIGURASI FIREBASE ============
   const firebaseConfig = {
-    apiKey: "JANLUP ISI",
-    authDomain: "INI JUGA!!!.firebaseapp.com",
-    databaseURL: "https://INI JUGA.asia-southeast1.firebasedatabase.app/",
-    projectId: "PLS JANLUP ISI!!!!!",
+    apiKey: "AIzaSyCy5udPz3Go4FIKinA-IFKHXLBj366u6kk",
+    authDomain: "solarpanelmia.firebaseapp.com",
+    projectId: "solarpanelmia",
+    storageBucket: "solarpanelmia.firebasestorage.app",
+    messagingSenderId: "183461831062",
+    appId: "1:183461831062:web:76806e5716ae64acfd7db7",
+    measurementId: "G-HRT0046T0H"
   };
-  const LOGIN_EMAIL = "email_akun_firebase@example.com";
-  const LOGIN_PASSWORD = "password_akun_firebase";
+  const LOGIN_EMAIL = "qwersyam7@gmail.com";
+  const LOGIN_PASSWORD = "AsyamMW123.";
   // ==================================================================
+
+  // ================= THEME TOGGLE =================
+  const THEME_KEY = 'solar-tracker-theme';
+
+  function applyTheme(theme) {
+    const isLight = theme === 'light';
+    document.body.classList.toggle('light-mode', isLight);
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    if (metaTheme) {
+      metaTheme.setAttribute('content', isLight ? '#f8f2e6' : '#151109');
+    }
+    try {
+      localStorage.setItem(THEME_KEY, theme);
+    } catch (e) { /* ignore */ }
+  }
+
+  function initTheme() {
+    let savedTheme = null;
+    try {
+      savedTheme = localStorage.getItem(THEME_KEY);
+    } catch (e) { /* ignore */ }
+
+    if (savedTheme === 'light' || savedTheme === 'dark') {
+      applyTheme(savedTheme);
+    } else {
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      applyTheme(prefersDark ? 'dark' : 'light');
+    }
+  }
+
+  initTheme();
+
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const isLight = document.body.classList.contains('light-mode');
+    applyTheme(isLight ? 'dark' : 'light');
+  });
+
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+    let savedTheme = null;
+    try { savedTheme = localStorage.getItem(THEME_KEY); } catch (err) { /* ignore */ }
+    if (!savedTheme) {
+      applyTheme(e.matches ? 'dark' : 'light');
+    }
+  });
+  // =====================================================================
 
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
@@ -678,9 +1277,7 @@
     return "Tengah (atas)";
   }
 
-  // ================= SCENE 3D (dimuat terpisah, tidak menghalangi UI lain) =================
-  // Nilai default no-op: kalau 3D gagal dimuat, panggilan ini tidak melakukan apa-apa
-  // sehingga tombol power/mode/slider di bawah tetap berfungsi normal.
+  // ================= SCENE 3D =================
   let setTargetAngles = function () {};
   let setPower3D = function () {};
 
@@ -695,147 +1292,140 @@
       let targetAzDeg = 0, targetElDeg = 35, currentAzDeg = 0, currentElDeg = 35;
 
       function init3D() {
-    scene = new THREE.Scene();
-    const w = container.clientWidth, h = container.clientHeight;
+        scene = new THREE.Scene();
+        const w = container.clientWidth, h = container.clientHeight;
 
-    camera = new THREE.PerspectiveCamera(42, w / h, 0.1, 100);
-    camera.position.set(5.2, 3.6, 6.2);
+        camera = new THREE.PerspectiveCamera(42, w / h, 0.1, 100);
+        camera.position.set(5.2, 3.6, 6.2);
 
-    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setSize(w, h);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    container.appendChild(renderer.domElement);
+        renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(w, h);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        container.appendChild(renderer.domElement);
 
-    controls = new OrbitControls(camera, renderer.domElement);
-    controls.target.set(0, 1.1, 0);
-    controls.enableDamping = true;
-    controls.dampingFactor = 0.08;
-    controls.minDistance = 4;
-    controls.maxDistance = 11;
-    controls.maxPolarAngle = Math.PI * 0.49;
-    controls.autoRotate = true;
-    controls.autoRotateSpeed = 0.55;
-    controls.enablePan = false;
+        controls = new OrbitControls(camera, renderer.domElement);
+        controls.target.set(0, 1.1, 0);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.08;
+        controls.minDistance = 4;
+        controls.maxDistance = 11;
+        controls.maxPolarAngle = Math.PI * 0.49;
+        controls.autoRotate = true;
+        controls.autoRotateSpeed = 0.55;
+        controls.enablePan = false;
 
-    scene.add(new THREE.AmbientLight(0x8896c4, 0.6));
-    const dirLight = new THREE.DirectionalLight(0xfff2d9, 0.85);
-    dirLight.position.set(4, 6, 2);
-    scene.add(dirLight);
-    const fillLight = new THREE.PointLight(0x4fb0ae, 0.5, 20);
-    fillLight.position.set(-4, 3, -3);
-    scene.add(fillLight);
+        scene.add(new THREE.AmbientLight(0xc9ab7c, 0.55));
+        const dirLight = new THREE.DirectionalLight(0xffe9c2, 0.9);
+        dirLight.position.set(4, 6, 2);
+        scene.add(dirLight);
+        const fillLight = new THREE.PointLight(0x5aa392, 0.5, 20);
+        fillLight.position.set(-4, 3, -3);
+        scene.add(fillLight);
 
-    // Tanah
-    const ground = new THREE.Mesh(
-      new THREE.CircleGeometry(6, 48),
-      new THREE.MeshStandardMaterial({ color: 0x171b30, roughness: 0.95, metalness: 0.05 })
-    );
-    ground.rotation.x = -Math.PI / 2;
-    scene.add(ground);
-    const grid = new THREE.GridHelper(12, 24, 0x2c3153, 0x20243f);
-    grid.position.y = 0.005;
-    scene.add(grid);
+        const ground = new THREE.Mesh(
+          new THREE.CircleGeometry(6, 48),
+          new THREE.MeshStandardMaterial({ color: 0x1a140b, roughness: 0.95, metalness: 0.05 })
+        );
+        ground.rotation.x = -Math.PI / 2;
+        scene.add(ground);
+        const grid = new THREE.GridHelper(12, 24, 0x3d3120, 0x241c12);
+        grid.position.y = 0.005;
+        scene.add(grid);
 
-    // Tiang
-    const pole = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.08, 0.11, 1.1, 16),
-      new THREE.MeshStandardMaterial({ color: 0x2c3153, metalness: 0.6, roughness: 0.4 })
-    );
-    pole.position.y = 0.55;
-    scene.add(pole);
+        const pole = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.08, 0.11, 1.1, 16),
+          new THREE.MeshStandardMaterial({ color: 0x3d3120, metalness: 0.6, roughness: 0.4 })
+        );
+        pole.position.y = 0.55;
+        scene.add(pole);
 
-    // Pivot azimuth (putar sumbu Y) & elevasi (anak dari azimuth, putar sumbu X)
-    azimuthPivot = new THREE.Group();
-    azimuthPivot.position.y = 1.1;
-    scene.add(azimuthPivot);
+        azimuthPivot = new THREE.Group();
+        azimuthPivot.position.y = 1.1;
+        scene.add(azimuthPivot);
 
-    elevationPivot = new THREE.Group();
-    azimuthPivot.add(elevationPivot);
+        elevationPivot = new THREE.Group();
+        azimuthPivot.add(elevationPivot);
 
-    // Badan panel
-    const panelGroup = new THREE.Group();
-    const panelMesh = new THREE.Mesh(
-      new THREE.BoxGeometry(2.0, 0.06, 1.3),
-      new THREE.MeshStandardMaterial({ color: 0x121a33, metalness: 0.4, roughness: 0.45 })
-    );
-    panelGroup.add(panelMesh);
+        const panelGroup = new THREE.Group();
+        const panelMesh = new THREE.Mesh(
+          new THREE.BoxGeometry(2.0, 0.06, 1.3),
+          new THREE.MeshStandardMaterial({ color: 0x171009, metalness: 0.45, roughness: 0.4 })
+        );
+        panelGroup.add(panelMesh);
 
-    // Garis sel surya di permukaan panel
-    const lineMat = new THREE.LineBasicMaterial({ color: 0x3f5a8a });
-    for (let i = -3; i <= 3; i++) {
-      const pts = [new THREE.Vector3(i * 0.28, 0.032, -0.62), new THREE.Vector3(i * 0.28, 0.032, 0.62)];
-      panelGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), lineMat));
-    }
-    for (let j = -2; j <= 2; j++) {
-      const pts = [new THREE.Vector3(-0.98, 0.032, j * 0.26), new THREE.Vector3(0.98, 0.032, j * 0.26)];
-      panelGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), lineMat));
-    }
+        const lineMat = new THREE.LineBasicMaterial({ color: 0x5c4f38 });
+        for (let i = -3; i <= 3; i++) {
+          const pts = [new THREE.Vector3(i * 0.28, 0.032, -0.62), new THREE.Vector3(i * 0.28, 0.032, 0.62)];
+          panelGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), lineMat));
+        }
+        for (let j = -2; j <= 2; j++) {
+          const pts = [new THREE.Vector3(-0.98, 0.032, j * 0.26), new THREE.Vector3(0.98, 0.032, j * 0.26)];
+          panelGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), lineMat));
+        }
 
-    panelGroup.position.set(0, 0.05, 0);
-    elevationPivot.add(panelGroup);
+        panelGroup.position.set(0, 0.05, 0);
+        elevationPivot.add(panelGroup);
 
-    // Matahari
-    sunMat = new THREE.MeshBasicMaterial({ color: 0xf5c568 });
-    sunMesh = new THREE.Mesh(new THREE.SphereGeometry(0.2, 24, 24), sunMat);
-    glowMat = new THREE.MeshBasicMaterial({ color: 0xe8a33d, transparent: true, opacity: 0.25 });
-    const glow = new THREE.Mesh(new THREE.SphereGeometry(0.4, 24, 24), glowMat);
-    sunMesh.add(glow);
-    scene.add(sunMesh);
+        sunMat = new THREE.MeshBasicMaterial({ color: 0xf5b04a });
+        sunMesh = new THREE.Mesh(new THREE.SphereGeometry(0.2, 24, 24), sunMat);
+        glowMat = new THREE.MeshBasicMaterial({ color: 0xe2892b, transparent: true, opacity: 0.25 });
+        const glow = new THREE.Mesh(new THREE.SphereGeometry(0.4, 24, 24), glowMat);
+        sunMesh.add(glow);
+        scene.add(sunMesh);
 
-    window.addEventListener('resize', onResize3D);
-    animate3D();
-  }
+        window.addEventListener('resize', onResize3D);
+        // Ukuran canvas juga berubah saat rotasi layar / perubahan layout
+        if ('ResizeObserver' in window) new ResizeObserver(onResize3D).observe(container);
+        animate3D();
+      }
 
-  function onResize3D() {
-    const w = container.clientWidth, h = container.clientHeight;
-    camera.aspect = w / h;
-    camera.updateProjectionMatrix();
-    renderer.setSize(w, h);
-  }
+      function onResize3D() {
+        const w = container.clientWidth, h = container.clientHeight;
+        if (!w || !h) return;
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+        renderer.setSize(w, h);
+      }
 
-  setTargetAngles = function (azimuthServo, elevasiServo) {
-    // servo 10-170 derajat -> azimuth panel -80..80 derajat, elevasi 0(datar)-90(tegak)
-    targetAzDeg = ((azimuthServo - 90) / 80) * 80;
-    targetElDeg = ((elevasiServo - 10) / 160) * 90;
-  };
+      setTargetAngles = function (azimuthServo, elevasiServo) {
+        targetAzDeg = ((azimuthServo - 90) / 80) * 80;
+        targetElDeg = ((elevasiServo - 10) / 160) * 90;
+      };
 
-  setPower3D = function (isOn) {
-    const targetOpacity = isOn ? 0.25 : 0.03;
-    glowMat.opacity = targetOpacity;
-    sunMat.color.set(isOn ? 0xf5c568 : 0x555a72);
-  };
+      setPower3D = function (isOn) {
+        const targetOpacity = isOn ? 0.25 : 0.03;
+        glowMat.opacity = targetOpacity;
+        sunMat.color.set(isOn ? 0xf5b04a : 0x584c38);
+      };
 
-  function animate3D() {
-    requestAnimationFrame(animate3D);
-    currentAzDeg += (targetAzDeg - currentAzDeg) * 0.06;
-    currentElDeg += (targetElDeg - currentElDeg) * 0.06;
+      function animate3D() {
+        requestAnimationFrame(animate3D);
+        currentAzDeg += (targetAzDeg - currentAzDeg) * 0.06;
+        currentElDeg += (targetElDeg - currentElDeg) * 0.06;
 
-    azimuthPivot.rotation.y = THREE.MathUtils.degToRad(currentAzDeg);
-    elevationPivot.rotation.x = -THREE.MathUtils.degToRad(currentElDeg);
+        azimuthPivot.rotation.y = THREE.MathUtils.degToRad(currentAzDeg);
+        elevationPivot.rotation.x = -THREE.MathUtils.degToRad(currentElDeg);
 
-    const azRad = THREE.MathUtils.degToRad(currentAzDeg);
-    const elRad = THREE.MathUtils.degToRad(Math.max(currentElDeg, 4));
-    const R = 4.6;
-    sunMesh.position.set(
-      Math.sin(azRad) * Math.cos(elRad) * R,
-      1.1 + Math.sin(elRad) * R * 0.85,
-      -Math.cos(azRad) * Math.cos(elRad) * R
-    );
+        const azRad = THREE.MathUtils.degToRad(currentAzDeg);
+        const elRad = THREE.MathUtils.degToRad(Math.max(currentElDeg, 4));
+        const R = 4.6;
+        sunMesh.position.set(
+          Math.sin(azRad) * Math.cos(elRad) * R,
+          1.1 + Math.sin(elRad) * R * 0.85,
+          -Math.cos(azRad) * Math.cos(elRad) * R
+        );
 
-    controls.update();
-    renderer.render(scene, camera);
-  }
+        controls.update();
+        renderer.render(scene, camera);
+      }
 
       init3D();
-
-      // Kalau data servo dari Firebase sudah sempat masuk sebelum 3D selesai dimuat,
-      // langsung terapkan posisi terakhirnya sekarang.
       setTargetAngles(lastAz, lastEl);
     } catch (err) {
-      console.warn('Visualisasi tidak dapat dimuat:', err);
+      console.warn('Visualisasi 3D tidak dapat dimuat:', err);
       const canvasBox = el('panel3dCanvas');
       if (canvasBox) {
-        canvasBox.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;padding:20px;text-align:center;font-size:0.78rem;color:var(--text-faint);line-height:1.5;">Visualisasi 3D tidak dapat dimuat pls cek koneksi internet :).</div>';
+        canvasBox.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;padding:20px;text-align:center;font-size:0.78rem;color:var(--text-faint);line-height:1.5;">Visualisasi 3D tidak dapat dimuat (cek koneksi internet atau buka lewat Live Server, bukan double-click file).<br>Data &amp; kontrol lain tetap berjalan normal.</div>';
       }
     }
   })();
@@ -876,8 +1466,8 @@
       el(valId).textContent = v ?? '—';
       if (v != null) {
         const brightness = Math.min(v / 4095, 1);
-        el(bulbId).style.background = `rgba(232,163,61,${0.25 + brightness * 0.75})`;
-        el(bulbId).style.boxShadow = brightness > 0.5 ? `0 0 10px 2px rgba(232,163,61,${brightness * 0.6})` : 'none';
+        el(bulbId).style.background = `rgba(226,137,43,${0.25 + brightness * 0.75})`;
+        el(bulbId).style.boxShadow = brightness > 0.5 ? `0 0 10px 2px rgba(226,137,43,${brightness * 0.6})` : 'none';
       }
       touchUpdated();
     });
@@ -972,11 +1562,11 @@
     const ctx = el('voltageChart').getContext('2d');
     voltageChart = new Chart(ctx, {
       type: 'line',
-      data: { labels, datasets: [{ data: values, borderColor: '#4fb0ae', backgroundColor: 'rgba(79,176,174,0.12)', borderWidth: 2, pointRadius: 0, pointHoverRadius: 4, pointHoverBackgroundColor: '#4fb0ae', fill: true, tension: 0.35 }] },
+      data: { labels, datasets: [{ data: values, borderColor: '#5aa392', backgroundColor: 'rgba(90,163,146,0.14)', borderWidth: 2, pointRadius: 0, pointHoverRadius: 4, pointHoverBackgroundColor: '#5aa392', fill: true, tension: 0.35 }] },
       options: {
         responsive: true, maintainAspectRatio: false, animation: { duration: 350 },
-        plugins: { legend: { display: false }, tooltip: { backgroundColor: '#1b1f33', borderColor: '#2c3153', borderWidth: 1, titleColor: '#f1efe9', bodyColor: '#f1efe9', padding: 10, displayColors: false, callbacks: { label: (c) => c.parsed.y.toFixed(2) + ' V' } } },
-        scales: { x: { ticks: { color: '#5c6084', maxTicksLimit: 6, font: { size: 10 } }, grid: { color: 'rgba(44,49,83,0.5)' } }, y: { ticks: { color: '#5c6084', font: { size: 10 } }, grid: { color: 'rgba(44,49,83,0.5)' } } }
+        plugins: { legend: { display: false }, tooltip: { backgroundColor: '#211a10', borderColor: '#3d3120', borderWidth: 1, titleColor: '#f4ecdc', bodyColor: '#f4ecdc', padding: 10, displayColors: false, callbacks: { label: (c) => c.parsed.y.toFixed(2) + ' V' } } },
+        scales: { x: { ticks: { color: '#6f6247', maxTicksLimit: 6, font: { size: 10 } }, grid: { color: 'rgba(61,49,32,0.5)' } }, y: { ticks: { color: '#6f6247', font: { size: 10 } }, grid: { color: 'rgba(61,49,32,0.5)' } } }
       }
     });
   }
@@ -997,7 +1587,7 @@
 
     let peakHour = -1, peakVal = -Infinity;
     hourlyAvg.forEach((v, i) => { if (v !== null && v > peakVal) { peakVal = v; peakHour = i; } });
-    const colors = hourlyAvg.map((v, i) => (i === peakHour ? '#e8a33d' : 'rgba(79,176,174,0.55)'));
+    const colors = hourlyAvg.map((v, i) => (i === peakHour ? '#e2892b' : 'rgba(90,163,146,0.55)'));
 
     el('peakHourText').innerHTML = peakHour >= 0
       ? `Jam paling efektif: <b>${String(peakHour).padStart(2, '0')}:00–${String((peakHour + 1) % 24).padStart(2, '0')}:00</b> · rata-rata ${peakVal.toFixed(2)} V`
@@ -1016,8 +1606,8 @@
       data: { labels, datasets: [{ data: hourlyAvg, backgroundColor: colors, borderRadius: 4, maxBarThickness: 14 }] },
       options: {
         responsive: true, maintainAspectRatio: false, animation: { duration: 350 },
-        plugins: { legend: { display: false }, tooltip: { backgroundColor: '#1b1f33', borderColor: '#2c3153', borderWidth: 1, titleColor: '#f1efe9', bodyColor: '#f1efe9', padding: 10, displayColors: false, callbacks: { label: (c) => (c.parsed.y != null ? c.parsed.y.toFixed(2) + ' V' : 'Tidak ada data') } } },
-        scales: { x: { ticks: { color: '#5c6084', font: { size: 9 }, maxRotation: 0, autoSkip: true, maxTicksLimit: 12 }, grid: { display: false } }, y: { ticks: { color: '#5c6084', font: { size: 10 } }, grid: { color: 'rgba(44,49,83,0.5)' } } }
+        plugins: { legend: { display: false }, tooltip: { backgroundColor: '#211a10', borderColor: '#3d3120', borderWidth: 1, titleColor: '#f4ecdc', bodyColor: '#f4ecdc', padding: 10, displayColors: false, callbacks: { label: (c) => (c.parsed.y != null ? c.parsed.y.toFixed(2) + ' V' : 'Tidak ada data') } } },
+        scales: { x: { ticks: { color: '#6f6247', font: { size: 9 }, maxRotation: 0, autoSkip: true, maxTicksLimit: 12 }, grid: { display: false } }, y: { ticks: { color: '#6f6247', font: { size: 10 } }, grid: { color: 'rgba(61,49,32,0.5)' } } }
       }
     });
   }
@@ -1049,7 +1639,7 @@
   loadVoltageHistory(24);
   db.ref('/solar_tracker/voltage_log').orderByKey().limitToLast(1).on('child_added', () => loadVoltageHistory(currentHours));
 
-  // ================= PWA: DAFTARKAN SERVICE WORKER =================
+  // ================= PWA =================
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('sw.js').catch((err) => console.warn('Service worker gagal didaftarkan:', err));
@@ -1074,7 +1664,7 @@
     el('energyTotalVal').innerHTML = (v != null ? (v / 1000).toFixed(2) : '—') + ' <small>kWh</small>';
   });
 
-  // ---------- Perbandingan dengan panel statis (kalau ada sensornya) ----------
+  // ---------- Perbandingan panel statis ----------
   let trackerEnergyToday = null, staticEnergyToday = null;
   function updateComparison() {
     if (trackerEnergyToday == null || staticEnergyToday == null) return;
@@ -1087,7 +1677,7 @@
   db.ref('/solar_tracker/energy_today_wh').on('value', (s) => { trackerEnergyToday = s.val(); updateComparison(); });
   db.ref('/solar_tracker/static_panel/energy_today_wh').on('value', (s) => { staticEnergyToday = s.val(); updateComparison(); });
 
-  // ---------- Grafik energi harian (7 hari) ----------
+  // ---------- Grafik energi harian ----------
   let dailyEnergyChart = null;
   function loadDailyEnergy() {
     db.ref('/solar_tracker/energy_daily_log').orderByKey().limitToLast(7).once('value', (snap) => {
@@ -1112,19 +1702,19 @@
       const ctx = document.getElementById('dailyEnergyChart').getContext('2d');
       dailyEnergyChart = new Chart(ctx, {
         type: 'bar',
-        data: { labels, datasets: [{ data: values, backgroundColor: 'rgba(232,163,61,0.65)', borderRadius: 4, maxBarThickness: 26 }] },
+        data: { labels, datasets: [{ data: values, backgroundColor: 'rgba(226,137,43,0.68)', borderRadius: 4, maxBarThickness: 26 }] },
         options: {
           responsive: true, maintainAspectRatio: false, animation: { duration: 350 },
           plugins: {
             legend: { display: false },
             tooltip: {
-              backgroundColor: '#1b1f33', borderColor: '#2c3153', borderWidth: 1, titleColor: '#f1efe9', bodyColor: '#f1efe9',
+              backgroundColor: '#211a10', borderColor: '#3d3120', borderWidth: 1, titleColor: '#f4ecdc', bodyColor: '#f4ecdc',
               padding: 10, displayColors: false, callbacks: { label: (ctx) => ctx.parsed.y.toFixed(1) + ' Wh' }
             }
           },
           scales: {
-            x: { ticks: { color: '#5c6084', font: { size: 10 } }, grid: { display: false } },
-            y: { ticks: { color: '#5c6084', font: { size: 10 } }, grid: { color: 'rgba(44,49,83,0.5)' } }
+            x: { ticks: { color: '#6f6247', font: { size: 10 } }, grid: { display: false } },
+            y: { ticks: { color: '#6f6247', font: { size: 10 } }, grid: { color: 'rgba(61,49,32,0.5)' } }
           }
         }
       });
@@ -1133,7 +1723,7 @@
   loadDailyEnergy();
   db.ref('/solar_tracker/energy_daily_log').limitToLast(1).on('child_added', loadDailyEnergy);
 
-  // ================= INDIKATOR PERANGKAT OFFLINE =================
+  // ================= INDIKATOR OFFLINE =================
   let lastSeenEpoch = null;
   db.ref('/solar_tracker/last_seen').on('value', (s) => { lastSeenEpoch = s.val(); });
 
@@ -1146,7 +1736,7 @@
   function checkOffline() {
     if (lastSeenEpoch == null) return;
     const diff = Math.floor(Date.now() / 1000) - lastSeenEpoch;
-    const isOffline = diff > 120; // lebih dari 2 menit tanpa update dianggap offline
+    const isOffline = diff > 120;
     document.body.classList.toggle('device-offline', isOffline);
     if (isOffline) el('lastSeenText').textContent = formatAgo(diff);
   }
@@ -1227,11 +1817,13 @@
       });
   });
 
-  // ================= NAVIGASI TAB BAWAH =================
-  const navButtons = Array.from(document.querySelectorAll('.nav-btn'));
+  // ================= NAVIGASI TAB =================
+  const navButtons = Array.from(document.querySelectorAll('.bottom-nav .nav-btn'));
+  const desktopNavButtons = Array.from(document.querySelectorAll('#desktopNav .nav-btn'));
+  const allNavButtons = [...navButtons, ...desktopNavButtons];
   const tabSections = navButtons.map((btn) => document.getElementById(btn.dataset.target));
 
-  navButtons.forEach((btn) => {
+  allNavButtons.forEach((btn) => {
     btn.addEventListener('click', () => {
       const target = document.getElementById(btn.dataset.target);
       if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -1244,8 +1836,9 @@
         if (!entry.isIntersecting) return;
         const idx = tabSections.indexOf(entry.target);
         if (idx === -1) return;
-        navButtons.forEach((b) => b.classList.remove('active'));
-        navButtons[idx].classList.add('active');
+        allNavButtons.forEach((b) => b.classList.remove('active'));
+        navButtons[idx]?.classList.add('active');
+        desktopNavButtons[idx]?.classList.add('active');
       });
     },
     { rootMargin: '-40% 0px -55% 0px', threshold: 0 }
